@@ -2,7 +2,7 @@
 using Regulus.Remote;
 using System;
 using Unity.Entities;
-using static Astringent.Game20220410.Expansions.VectorExpansions;
+
 
 
 namespace Astringent.Game20220410.Expansions
@@ -17,9 +17,9 @@ namespace Astringent.Game20220410.Sources
         public readonly IBinder Binder;
         public readonly int Id;
 
-        Property<Vector> _Vector;
-        Property<Vector> _Position;
-
+        Property<Unity.Mathematics.float3> _Vector;
+        Property<Unity.Mathematics.float3> _Position;
+        float _SampelInterval;
         System.Action _Remover;
         public User(Entity e, Regulus.Remote.IBinder binder)
         {
@@ -27,8 +27,8 @@ namespace Astringent.Game20220410.Sources
             Entity = e;
             this.Binder = binder;
 
-            _Vector = new Property<Vector>();
-            _Position = new Property<Vector>();
+            _Vector = new Property<Unity.Mathematics.float3>();
+            _Position = new Property<Unity.Mathematics.float3>();
             var actor = Binder.Bind<IActor>(this);
             var player = Binder.Bind<IPlayer>(this);
 
@@ -44,20 +44,39 @@ namespace Astringent.Game20220410.Sources
 
         Property<int> IPlayer.Id => new Property<int>(Id);
 
-        Property<Vector> IActor.Vector => _Vector;
+        Property<Unity.Mathematics.float3> IActor.Vector => _Vector;
 
-        Property<Vector> IActor.Position => _Position;
+        Property<Unity.Mathematics.float3> IActor.Position => _Position;
 
         void IDisposable.Dispose()
         {
             _Remover();
         }
 
-        Value<int> IPlayer.SetDirection(Vector dir)
+        public void StateSample()
         {
+            _SampelInterval += UnityEngine.Time.deltaTime;
+            if (_SampelInterval < 1f / 20f)
+                return;
+            _SampelInterval = 0;
             var mgr = World.DefaultGameObjectInjectionWorld.EntityManager;
-            mgr.SetComponentData(Entity, new Dots.Direction() { Value = dir.ToUnity() });
-            return 0;
+            var moveing = mgr.GetComponentData<Dots.MoveingState>(Entity);
+            
+            if(Unity.Mathematics.math.all(_Vector.Value != moveing.Vector))
+                _Vector.Value = moveing.Vector;
+            if (Unity.Mathematics.math.all(_Position.Value != moveing.Position))
+                _Position.Value = moveing.Position;
+        }
+        Value<int> IPlayer.SetDirection(Unity.Mathematics.float3 dir)
+        {
+            Value<int> value = new Value<int>();
+            UniRx.MainThreadDispatcher.Post((state) => {
+                var mgr = World.DefaultGameObjectInjectionWorld.EntityManager;
+                mgr.SetComponentData(Entity, new Dots.Direction() { Value = dir }); ;
+                value.SetValue(0);
+            } , null);
+            
+            return value;
         }
     }
 }

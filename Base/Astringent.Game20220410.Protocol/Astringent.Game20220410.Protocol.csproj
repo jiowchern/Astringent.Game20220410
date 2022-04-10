@@ -1,7 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+	  <UnityVersion>2020.3.33f1</UnityVersion>
+	  <UnityInstallRoot>D:\Unity\IDEs</UnityInstallRoot>
+	    <UnityProjectPath>../../Game/Astringent.Game20220410.Soul</UnityProjectPath>
   </PropertyGroup>
 
 	<ItemGroup>
@@ -11,6 +14,11 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+		<PackageReference Include="Unity3D" Version="1.7.0" />
+		
+		<Reference Include="$(UnityProjectPath)\$(UnityScriptAssembliesPath)\Unity.Mathematics.dll" Private="false" />
+		
+		<!-- <PackageReference Include="Unity3D.SDK" Version="2021.1.14.1" /> -->
 	</ItemGroup>
 
 </Project>

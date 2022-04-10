@@ -20,9 +20,10 @@ namespace Astringent.Game20220410.Scripts
         private readonly List<Astringent.Game20220410.Sources.User> _Users;
         readonly System.Collections.Concurrent.ConcurrentQueue<Regulus.Remote.IBinder> _RemoveBinders;
         private IService _Service;
-        
+        readonly System.Collections.Generic.List<System.Action> _Closes ;
         public Entry()
         {
+            _Closes = new List<System.Action>();
             _Users = new List<Astringent.Game20220410.Sources.User>();
             _RemoveBinders = new System.Collections.Concurrent.ConcurrentQueue<Regulus.Remote.IBinder>();
             _AddBinders = new System.Collections.Concurrent.ConcurrentQueue<Regulus.Remote.IBinder>();
@@ -39,13 +40,13 @@ namespace Astringent.Game20220410.Scripts
             
             var listener = new Soul.Sources.Listener();
 
-            var Closes = new System.Collections.Generic.List<System.Action>();
+            
             
             {
                 var tcp = new Regulus.Remote.Server.Tcp.Listener();
                 listener.Add(tcp);
                 tcp.Bind(53003);
-                Closes.Add(() => tcp.Close());
+                _Closes.Add(() => tcp.Close());
             }
 
             
@@ -74,10 +75,11 @@ namespace Astringent.Game20220410.Scripts
 
                 var entityArchetype = entityManager.CreateArchetype(                                            
                                            typeof(Dots.Direction),
-                                           typeof(Translation),
-                                           typeof(RenderMesh),
+                                           typeof(Dots.MoveingState),
+                                           typeof(Translation)
+                                           /*typeof(RenderMesh),
                                            typeof(LocalToWorld),
-                                           typeof(RenderBounds));
+                                           typeof(RenderBounds)*/);
 
                 Entity entity = entityManager.CreateEntity(entityArchetype);
 
@@ -92,10 +94,20 @@ namespace Astringent.Game20220410.Scripts
                 }
                 
             }
+
+
+            foreach (var user in _Users)
+            {
+                user.StateSample();
+            }
         }
 
         void OnDestroy()
         {
+            foreach (var item in _Closes)
+            {
+                item();
+            }
             _Service.Dispose();
         }
     }

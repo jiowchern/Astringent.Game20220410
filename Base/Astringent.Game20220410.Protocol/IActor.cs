@@ -4,9 +4,9 @@
     {
         Regulus.Remote.Property<int> Id { get; }
 
-        Regulus.Remote.Property<Vector> Vector { get; }
+        Regulus.Remote.Property<Unity.Mathematics.float3> Vector { get; }
 
-        Regulus.Remote.Property<Vector> Position { get; }
+        Regulus.Remote.Property<Unity.Mathematics.float3> Position { get; }
 
 
     }

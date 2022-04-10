@@ -4,6 +4,6 @@
     {
         Regulus.Remote.Property<int> Id { get; }
 
-        Regulus.Remote.Value<int> SetDirection(Vector dir);
+        Regulus.Remote.Value<int> SetDirection(Unity.Mathematics.float3 dir);
     }
 }

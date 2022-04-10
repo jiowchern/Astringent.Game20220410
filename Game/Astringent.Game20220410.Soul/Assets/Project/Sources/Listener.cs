@@ -3,7 +3,6 @@ using System;
 namespace Astringent.Game20220410.Soul.Sources
 {
 
-  
     class Listener : Regulus.Remote.Soul.IListenable
     {
 
