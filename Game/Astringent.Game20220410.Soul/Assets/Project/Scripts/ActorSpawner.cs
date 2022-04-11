@@ -7,6 +7,7 @@ using UnityEngine;
 using Astringent.Game20220410.Sources;
 using Astringent.Game20220410.Protocol;
 using Unity.Jobs;
+using Unity.Mathematics;
 
 namespace Astringent.Game20220410.Scripts
 {
@@ -16,6 +17,7 @@ namespace Astringent.Game20220410.Scripts
         private EntityArchetype _EntityArchetype;
 
         public GameObject Actor;
+        
 
         readonly System.Collections.Generic.List<User> _Users;
         public ActorSpawner()
@@ -52,9 +54,29 @@ namespace Astringent.Game20220410.Scripts
             var meshFilter = Actor.GetComponent<UnityEngine.MeshFilter>();
             var meshRender = Actor.GetComponent<UnityEngine.MeshRenderer>();
 
-            entityManager.SetSharedComponentData(entity, new RenderMesh { mesh = meshFilter.sharedMesh , material = meshRender.sharedMaterial} );
+            
 
             entityManager.SetComponentData(entity, new ActorAttributes { Direction = 0f , Speed = 1f});
+
+
+            entityManager.SetComponentData(entity, new LocalToWorld(){
+                Value = new float4x4(rotation: quaternion.identity, translation: new float3(0, 0, 0))
+            });
+            entityManager.SetSharedComponentData(entity, new RenderMesh()
+            {
+                layerMask = 1,
+                          mesh = meshFilter.sharedMesh,
+                            material = meshRender.sharedMaterial
+
+            });
+            entityManager.SetComponentData(entity, new RenderBounds()
+            {
+                Value = new AABB()
+                {
+                    Center = new float3(0, 0, 0),
+                    Extents = new float3(0.5f, 0.5f, 0.5f)
+                }
+            });
             return entity;
 
 
@@ -76,7 +98,10 @@ namespace Astringent.Game20220410.Scripts
             {
                 if (user.Binder != binder)
                     continue;
-                using (user) ;
+                using (user)
+                {
+
+                }
             }
             _Users.RemoveAll(x => x.Binder == binder);
 
