@@ -12,19 +12,36 @@ using Unity.Transforms;
 
 namespace Astringent.Game20220410.Scripts
 {
-    public class Entry : MonoBehaviour , Regulus.Remote.IEntry
+    public class Service : MonoBehaviour , Regulus.Remote.IEntry
     {
+        public readonly static string WorldName = "server";
+        
+        public static World GetWorld()
+        {
+            foreach (var world in World.All)
+            {
+                if (world.Name != WorldName)
+                    continue;
+                return world;                
+            }
+            var w = new World(WorldName);
+            
+            return w;
 
-        int _IdProvider;
-        readonly System.Collections.Concurrent.ConcurrentQueue<Regulus.Remote.IBinder> _AddBinders;
-        private readonly List<Astringent.Game20220410.Sources.User> _Users;
+            //return World.DefaultGameObjectInjectionWorld;
+        }
+
+        public int TcpPort;
+
+        readonly System.Collections.Concurrent.ConcurrentQueue<Regulus.Remote.IBinder> _AddBinders;        
         readonly System.Collections.Concurrent.ConcurrentQueue<Regulus.Remote.IBinder> _RemoveBinders;
+        
         private IService _Service;
         readonly System.Collections.Generic.List<System.Action> _Closes ;
-        public Entry()
+        public Service()
         {
             _Closes = new List<System.Action>();
-            _Users = new List<Astringent.Game20220410.Sources.User>();
+            
             _RemoveBinders = new System.Collections.Concurrent.ConcurrentQueue<Regulus.Remote.IBinder>();
             _AddBinders = new System.Collections.Concurrent.ConcurrentQueue<Regulus.Remote.IBinder>();
         }
@@ -38,6 +55,9 @@ namespace Astringent.Game20220410.Scripts
         void Start()
         {
             
+
+
+
             var listener = new Soul.Sources.Listener();
 
             
@@ -45,7 +65,7 @@ namespace Astringent.Game20220410.Scripts
             {
                 var tcp = new Regulus.Remote.Server.Tcp.Listener();
                 listener.Add(tcp);
-                tcp.Bind(53003);
+                tcp.Bind(TcpPort);
                 _Closes.Add(() => tcp.Close());
             }
 
@@ -60,6 +80,7 @@ namespace Astringent.Game20220410.Scripts
             var protocol = Astringent.Game20220410.Protocol.Provider.Create();
             _Service = Regulus.Remote.Server.Provider.CreateService(this, protocol, listener);
         }
+        
 
         // Update is called once per frame
         void Update()
@@ -67,39 +88,17 @@ namespace Astringent.Game20220410.Scripts
             Regulus.Remote.IBinder binder;
             while(_AddBinders.TryDequeue(out binder))
             {
-                var id = ++_IdProvider;
-                
-                
-                var entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-                
+                BinderEnterEvent.Invoke(binder);
 
-                var entityArchetype = entityManager.CreateArchetype(                                            
-                                           typeof(Dots.Direction),
-                                           typeof(Dots.MoveingState),
-                                           typeof(Translation)
-                                           /*typeof(RenderMesh),
-                                           typeof(LocalToWorld),
-                                           typeof(RenderBounds)*/);
 
-                Entity entity = entityManager.CreateEntity(entityArchetype);
-
-                _Users.Add(new Astringent.Game20220410.Sources.User(entity, binder));
             }
             while (_RemoveBinders.TryDequeue(out binder))
             {
-                var user = _Users.Find((user)=> user.Binder == binder);
-                using (user)
-                {
-                    _Users.Remove(user);
-                }
-                
+
+                BinderLeaveEvent.Invoke(binder);
             }
 
 
-            foreach (var user in _Users)
-            {
-                user.StateSample();
-            }
         }
 
         void OnDestroy()
@@ -108,8 +107,12 @@ namespace Astringent.Game20220410.Scripts
             {
                 item();
             }
-            _Service.Dispose();
+            _Service.Dispose();           
+            
         }
+
+        public UnityEngine.Events.UnityEvent<Regulus.Remote.IBinder> BinderEnterEvent;
+        public UnityEngine.Events.UnityEvent<Regulus.Remote.IBinder> BinderLeaveEvent;
     }
 
 }

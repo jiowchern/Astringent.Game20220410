@@ -53,17 +53,12 @@ namespace Astringent.Game20220410.Scripts
         public void Move()
         {
             var obs = from player in _Set.Agent.QueryNotifier<IPlayer>().SupplyEvent().First()
-                      from _ in _Move(player)
+                      from _ in player.SetDirection(new Unity.Mathematics.float3(1, 0, 0)).RemoteValue()
                       select _;
-
 
             _Disposable.Add(obs.ObserveOnMainThread().Subscribe(_MoveDone));
         }
 
-        private static IObservable<int> _Move(IPlayer player)
-        {
-            return player.SetDirection(new Unity.Mathematics.float3(1, 0, 0)).RemoteValue();
-        }
 
         private void _MoveDone(int obj)
         {

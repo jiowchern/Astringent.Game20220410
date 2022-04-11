@@ -5,9 +5,6 @@ using Unity.Entities;
 
 
 
-namespace Astringent.Game20220410.Expansions
-{
-}
 namespace Astringent.Game20220410.Sources
 {
     public class User : System.IDisposable ,Astringent.Game20220410.Protocol.IActor , IPlayer
@@ -21,10 +18,10 @@ namespace Astringent.Game20220410.Sources
         Property<Unity.Mathematics.float3> _Position;
         float _SampelInterval;
         System.Action _Remover;
-        public User(Entity e, Regulus.Remote.IBinder binder)
+        public User(Entity entity, Regulus.Remote.IBinder binder)
         {
             Id = ++_IdProvider;
-            Entity = e;
+            Entity = entity;
             this.Binder = binder;
 
             _Vector = new Property<Unity.Mathematics.float3>();
@@ -59,7 +56,7 @@ namespace Astringent.Game20220410.Sources
             if (_SampelInterval < 1f / 20f)
                 return;
             _SampelInterval = 0;
-            var mgr = World.DefaultGameObjectInjectionWorld.EntityManager;
+            var mgr = Scripts.Service.GetWorld().EntityManager;
             var moveing = mgr.GetComponentData<Dots.MoveingState>(Entity);
             
             if(Unity.Mathematics.math.all(_Vector.Value != moveing.Vector))
@@ -71,8 +68,8 @@ namespace Astringent.Game20220410.Sources
         {
             Value<int> value = new Value<int>();
             UniRx.MainThreadDispatcher.Post((state) => {
-                var mgr = World.DefaultGameObjectInjectionWorld.EntityManager;
-                mgr.SetComponentData(Entity, new Dots.Direction() { Value = dir }); ;
+                var mgr = Scripts.Service.GetWorld().EntityManager;
+                mgr.SetComponentData(Entity, new Dots.Direction() { Value = dir }); 
                 value.SetValue(0);
             } , null);
             

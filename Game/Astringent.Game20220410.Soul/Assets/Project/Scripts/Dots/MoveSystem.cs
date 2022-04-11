@@ -2,8 +2,11 @@
 using Unity.Transforms; 
 namespace Astringent.Game20220410.Dots.Systems
 {
+
+    [Unity.Entities.WorldSystemFilter(WorldSystemFilterFlags.All)]
     public partial class MoveSystem : SystemBase
     {
+        
         protected override void OnUpdate()
         {
             float deltaTime = Time.DeltaTime;
