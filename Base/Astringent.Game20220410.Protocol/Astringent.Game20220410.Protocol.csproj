@@ -3,7 +3,9 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
 	  <UnityVersion>2020.3.33f1</UnityVersion>
-	  <UnityInstallRoot>D:\Unity\IDEs</UnityInstallRoot>
+	  
+	  <UnityInstallRoot>$(UNITY_INSTALL_PATH)</UnityInstallRoot>
+	  
 	    <UnityProjectPath>../../Game/Astringent.Game20220410.Soul</UnityProjectPath>
   </PropertyGroup>
 
@@ -15,6 +17,7 @@
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="Unity3D" Version="1.7.0" />
+		<Reference Include="$(UnityProjectPath)\$(UnityScriptAssembliesPath)\Unity.Entities.dll" Private="false" />
 		
 		<Reference Include="$(UnityProjectPath)\$(UnityScriptAssembliesPath)\Unity.Mathematics.dll" Private="false" />
 		

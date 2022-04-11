@@ -18,17 +18,15 @@ namespace Astringent.Game20220410.Scripts
         
         public static World GetWorld()
         {
-            foreach (var world in World.All)
+            /*foreach (var world in World.All)
             {
                 if (world.Name != WorldName)
                     continue;
                 return world;                
             }
-            var w = new World(WorldName);
-            
-            return w;
+            return new World(WorldName);*/
 
-            //return World.DefaultGameObjectInjectionWorld;
+            return World.DefaultGameObjectInjectionWorld;
         }
 
         public int TcpPort;
@@ -54,14 +52,7 @@ namespace Astringent.Game20220410.Scripts
         // Start is called before the first frame update
         void Start()
         {
-            
-
-
-
             var listener = new Soul.Sources.Listener();
-
-            
-            
             {
                 var tcp = new Regulus.Remote.Server.Tcp.Listener();
                 listener.Add(tcp);

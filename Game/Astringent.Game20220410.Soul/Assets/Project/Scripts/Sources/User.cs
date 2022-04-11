@@ -2,7 +2,7 @@
 using Regulus.Remote;
 using System;
 using Unity.Entities;
-
+using Astringent.Game20220410.Dots.Expansions;
 
 
 namespace Astringent.Game20220410.Sources
@@ -14,9 +14,9 @@ namespace Astringent.Game20220410.Sources
         public readonly IBinder Binder;
         public readonly int Id;
 
-        Property<Unity.Mathematics.float3> _Vector;
-        Property<Unity.Mathematics.float3> _Position;
-        float _SampelInterval;
+        Property<MoveingState> _MoveingState;
+        Property<ActorAttributes> _Attributes;
+        float _SyncMovingStateInterval;
         System.Action _Remover;
         public User(Entity entity, Regulus.Remote.IBinder binder)
         {
@@ -24,8 +24,8 @@ namespace Astringent.Game20220410.Sources
             Entity = entity;
             this.Binder = binder;
 
-            _Vector = new Property<Unity.Mathematics.float3>();
-            _Position = new Property<Unity.Mathematics.float3>();
+            _MoveingState = new Property<MoveingState>();
+            _Attributes = new Property<ActorAttributes>();
             var actor = Binder.Bind<IActor>(this);
             var player = Binder.Bind<IPlayer>(this);
 
@@ -41,35 +41,45 @@ namespace Astringent.Game20220410.Sources
 
         Property<int> IPlayer.Id => new Property<int>(Id);
 
-        Property<Unity.Mathematics.float3> IActor.Vector => _Vector;
+        Property<MoveingState> IActor.MoveingState => _MoveingState;
 
-        Property<Unity.Mathematics.float3> IActor.Position => _Position;
+        Property<ActorAttributes> IActor.Attributes => _Attributes;
 
         void IDisposable.Dispose()
         {
             _Remover();
         }
 
-        public void StateSample()
+        public void SyncStates()
         {
-            _SampelInterval += UnityEngine.Time.deltaTime;
-            if (_SampelInterval < 1f / 20f)
+            _SyncMovingStateInterval += UnityEngine.Time.deltaTime;
+            if (_SyncMovingStateInterval < 1f / 20f)
                 return;
-            _SampelInterval = 0;
+            _SyncMovingStateInterval = 0;
             var mgr = Scripts.Service.GetWorld().EntityManager;
-            var moveing = mgr.GetComponentData<Dots.MoveingState>(Entity);
-            
-            if(Unity.Mathematics.math.all(_Vector.Value != moveing.Vector))
-                _Vector.Value = moveing.Vector;
-            if (Unity.Mathematics.math.all(_Position.Value != moveing.Position))
-                _Position.Value = moveing.Position;
+
+            {
+                var moveing = mgr.GetComponentData<MoveingState>(Entity);
+                if (moveing.Equals(_MoveingState.Value))
+                    return;
+                _MoveingState.Value = moveing;
+            }
+
+            {
+                var component = mgr.GetComponentData<ActorAttributes>(Entity);
+                if (component.Equals(_Attributes.Value))
+                    return;
+                _Attributes.Value = component;
+            }
+
         }
         Value<int> IPlayer.SetDirection(Unity.Mathematics.float3 dir)
         {
+            var direction = new Dots.Direction() { Value = Unity.Mathematics.math.normalizesafe(dir) };
             Value<int> value = new Value<int>();
             UniRx.MainThreadDispatcher.Post((state) => {
-                var mgr = Scripts.Service.GetWorld().EntityManager;
-                mgr.SetComponentData(Entity, new Dots.Direction() { Value = dir }); 
+                var mgr = Scripts.Service.GetWorld().EntityManager;                
+                mgr.SetComponentData(Entity, direction); 
                 value.SetValue(0);
             } , null);
             

@@ -5,6 +5,8 @@ using Unity.Rendering;
 
 using UnityEngine;
 using Astringent.Game20220410.Sources;
+using Astringent.Game20220410.Protocol;
+using Unity.Jobs;
 
 namespace Astringent.Game20220410.Scripts
 {
@@ -26,7 +28,8 @@ namespace Astringent.Game20220410.Scripts
             var entityManager = Service.GetWorld().EntityManager;
             _EntityArchetype = entityManager.CreateArchetype(
                                       typeof(Dots.Direction),
-                                      typeof(Dots.MoveingState),
+                                      typeof(MoveingState),
+                                      typeof(ActorAttributes),
                                       typeof(Translation),
                                       typeof(RenderMesh),
                                       typeof(LocalToWorld),
@@ -36,7 +39,10 @@ namespace Astringent.Game20220410.Scripts
         // Update is called once per frame
         void Update()
         {
-            
+            foreach (var user in _Users)
+            {
+                user.SyncStates();
+            }
         }
 
         internal Entity Spawn()
@@ -46,7 +52,9 @@ namespace Astringent.Game20220410.Scripts
             var meshFilter = Actor.GetComponent<UnityEngine.MeshFilter>();
             var meshRender = Actor.GetComponent<UnityEngine.MeshRenderer>();
 
-            entityManager.SetSharedComponentData(entity, new RenderMesh { mesh = meshFilter.sharedMesh , material = meshRender.sharedMaterial} );            
+            entityManager.SetSharedComponentData(entity, new RenderMesh { mesh = meshFilter.sharedMesh , material = meshRender.sharedMaterial} );
+
+            entityManager.SetComponentData(entity, new ActorAttributes { Direction = 0f , Speed = 1f});
             return entity;
 
 
