@@ -3,7 +3,8 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UniRx;
 using System.Linq;
-using static Astringent.Game20220410.Soul.Sources.INotifierQueryableRx;
+using static Astringent.Game20220410.Soul.Sources.INotifierExpansions;
+using static Astringent.Game20220410.Soul.Sources.PropertyExpansions;
 using System;
 
 namespace Astringent.Game20220410.Scripts
@@ -26,7 +27,20 @@ namespace Astringent.Game20220410.Scripts
             _Set = set;
 
             _Set.Agent.QueryNotifier<Astringent.Game20220410.Protocol.IPlayer>().Supply += _GetPlayer;
+            var moveingStateObs = from plr in _Set.Agent.QueryNotifier<Astringent.Game20220410.Protocol.IPlayer>().SupplyEvent()
+                        from actor in _Set.Agent.QueryNotifier<Astringent.Game20220410.Protocol.IActor>().SupplyEvent()
+                            where actor.Id == plr.Id
+                        from state in actor.MoveingState.ChangeObservable()
+                        select state;
+
+            _Disposable.Add( moveingStateObs.Subscribe(_MoveingState));
         }
+
+        private void _MoveingState(MoveingState state)
+        {
+            UnityEngine.Debug.Log($"MoveingState {state.Vector}");
+        }
+
         public void StartConnect()
         {
             _Set.Connecter.Connect(new System.Net.IPEndPoint(System.Net.IPAddress.Parse("127.0.0.1"), 53003));
@@ -60,7 +74,7 @@ namespace Astringent.Game20220410.Scripts
         }
 
 
-        private void _MoveDone(int obj)
+        private void _MoveDone(bool obj)
         {
             UnityEngine.Debug.Log("move done");
         }

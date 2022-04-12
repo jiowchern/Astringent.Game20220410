@@ -1,12 +1,9 @@
 ﻿using System;
 
+
 namespace Astringent.Game20220410.Protocol
 {
-    public struct ActorAttributes : Unity.Entities.IComponentData
-    {
-        public Unity.Mathematics.float3 Direction;
-        public Unity.Mathematics.float3 Speed;
-    }
+    [Unity.Entities.GenerateAuthoringComponent]
     public struct MoveingState : Unity.Entities.IComponentData
     {
         public double StartTime;

@@ -4,7 +4,7 @@ using UniRx;
 
 namespace Astringent.Game20220410.Soul.Sources
 {
-    public static class INotifierQueryableRx
+    public static class INotifierExpansions
     {
 
         public static IObservable<TValue> RemoteValue<TValue>(this Regulus.Remote.Value<TValue> ret)

@@ -2,7 +2,7 @@
 
 namespace Astringent.Game20220410.Soul.Sources
 {
-    public static partial class PropertyRx
+    public static partial class PropertyExpansions
     {
         public static IObservable<T> ChangeObservable<T>(this Regulus.Remote.Property<T> instance)
         {

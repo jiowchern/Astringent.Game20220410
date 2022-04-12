@@ -7,20 +7,21 @@ using Unity.Entities;
 
 namespace Astringent.Game20220410.Sources
 {
+
     public class User : System.IDisposable ,Astringent.Game20220410.Protocol.IActor , IPlayer
     {
-        static int _IdProvider;
+        
         public readonly Entity Entity;
         public readonly IBinder Binder;
-        public readonly int Id;
+        public readonly long Id;
 
         Property<MoveingState> _MoveingState;
         Property<ActorAttributes> _Attributes;
         float _SyncMovingStateInterval;
         System.Action _Remover;
-        public User(Entity entity, Regulus.Remote.IBinder binder)
+        public User(long id,Entity entity, Regulus.Remote.IBinder binder)
         {
-            Id = ++_IdProvider;
+            Id = id;
             Entity = entity;
             this.Binder = binder;
 
@@ -35,11 +36,20 @@ namespace Astringent.Game20220410.Sources
             };
 
             UnityEngine.Debug.Log("server get player");
+            Scripts.Service.GetWorld().GetExistingSystem<Dots.Systems.MoveSystem>().StateEvent += _UpdateMoveingState;
         }
 
-        Property<int> IActor.Id => new Property<int>(Id);
+        private void _UpdateMoveingState(long id, MoveingState obj)
+        {
+            if (id != Id)
+                return;
 
-        Property<int> IPlayer.Id => new Property<int>(Id);
+            _MoveingState.Value = obj;
+        }
+
+        Property<long> IActor.Id => new Property<long>(Id);
+
+        Property<long> IPlayer.Id => new Property<long>(Id);
 
         Property<MoveingState> IActor.MoveingState => _MoveingState;
 
@@ -47,6 +57,7 @@ namespace Astringent.Game20220410.Sources
 
         void IDisposable.Dispose()
         {
+            Scripts.Service.GetWorld().GetExistingSystem<Dots.Systems.MoveSystem>().StateEvent -= _UpdateMoveingState;
             _Remover();
         }
 
@@ -58,12 +69,7 @@ namespace Astringent.Game20220410.Sources
             _SyncMovingStateInterval = 0;
             var mgr = Scripts.Service.GetWorld().EntityManager;
 
-            {
-                var moveing = mgr.GetComponentData<MoveingState>(Entity);
-                if (moveing.Equals(_MoveingState.Value))
-                    return;
-                _MoveingState.Value = moveing;
-            }
+          
 
             {
                 var component = mgr.GetComponentData<ActorAttributes>(Entity);
@@ -73,14 +79,14 @@ namespace Astringent.Game20220410.Sources
             }
 
         }
-        Value<int> IPlayer.SetDirection(Unity.Mathematics.float3 dir)
+        Value<bool> IPlayer.SetDirection(Unity.Mathematics.float3 dir)
         {
             var direction = new Dots.Direction() { Value = Unity.Mathematics.math.normalizesafe(dir) };
-            Value<int> value = new Value<int>();
+            Value<bool> value = new Value<bool>();
             UniRx.MainThreadDispatcher.Post((state) => {
                 var mgr = Scripts.Service.GetWorld().EntityManager;                
                 mgr.SetComponentData(Entity, direction); 
-                value.SetValue(0);
+                value.SetValue(true);
             } , null);
             
             return value;

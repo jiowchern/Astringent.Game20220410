@@ -2,8 +2,8 @@
 {
     public interface IPlayer
     {
-        Regulus.Remote.Property<int> Id { get; }
+        Regulus.Remote.Property<long> Id { get; }
 
-        Regulus.Remote.Value<int> SetDirection(Unity.Mathematics.float3 dir);
+        Regulus.Remote.Value<bool> SetDirection(Unity.Mathematics.float3 dir);
     }
 }

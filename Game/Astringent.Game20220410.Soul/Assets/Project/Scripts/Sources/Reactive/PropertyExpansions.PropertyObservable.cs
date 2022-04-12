@@ -3,7 +3,7 @@ using System;
 
 namespace Astringent.Game20220410.Soul.Sources
 {
-    public static partial class PropertyRx
+    public static partial class PropertyExpansions
     {
         internal class PropertyObservable<T> : UniRx.Operators.OperatorObservableBase<T>
         {

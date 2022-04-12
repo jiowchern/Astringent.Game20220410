@@ -3,7 +3,7 @@
     
     public interface IActor
     {
-        Regulus.Remote.Property<int> Id { get; }
+        Regulus.Remote.Property<long> Id { get; }
 
         Regulus.Remote.Property<MoveingState> MoveingState { get; }
 
