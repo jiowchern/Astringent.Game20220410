@@ -253,8 +253,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a398d9137ff78b40b231a70946be2a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TcpPort: 53772
-  WebPort: 53771
+  TcpPort: 53004
+  WebPort: 53100
   BinderEnterEvent:
     m_PersistentCalls:
       m_Calls:

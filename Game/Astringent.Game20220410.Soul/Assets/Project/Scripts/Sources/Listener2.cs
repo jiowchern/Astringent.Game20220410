@@ -96,8 +96,16 @@ namespace Astringent.Game20220410.Soul.Sources.Web
 
         public void Bind(string address)
         {
+            ServicePointManager.ServerCertificateValidationCallback +=
+ (sender, cert, chain, sslPolicyErrors) =>
+ {
+     return true;
+ };
             _HttpListener.Prefixes.Add(address);
             _HttpListener.Start();
+            _HttpListener.AuthenticationSchemes = AuthenticationSchemes.Anonymous;
+            
+
             _ = _HttpListener.GetContextAsync().ContinueWith(_Listen, _CancelGetContext.Token);
         }
 
@@ -112,14 +120,19 @@ namespace Astringent.Game20220410.Soul.Sources.Web
             }
 
             HttpListenerContext context = task.Result;
+            
             if (context.Request.IsWebSocketRequest)
             {
-                _Accept(context);
+                _Accept(context).Wait();
             }
-        
+            else
+            {                
+                context.Response.StatusCode = (int)HttpStatusCode.NotImplemented;
+                context.Response.Close();
+            }
         }
 
-        private async void _Accept(HttpListenerContext context)
+        private async Task _Accept(HttpListenerContext context)
         {
 
             System.Net.WebSockets.HttpListenerWebSocketContext webSocketContext = await context.AcceptWebSocketAsync(null);

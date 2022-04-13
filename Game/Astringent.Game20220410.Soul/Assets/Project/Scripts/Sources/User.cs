@@ -72,6 +72,7 @@ namespace Astringent.Game20220410.Sources
           
 
             {
+                
                 var component = mgr.GetComponentData<ActorAttributes>(Entity);
                 if (component.Equals(_Attributes.Value))
                     return;

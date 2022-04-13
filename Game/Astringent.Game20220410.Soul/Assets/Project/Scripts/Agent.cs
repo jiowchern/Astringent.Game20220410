@@ -26,8 +26,10 @@ namespace Astringent.Game20220410.Scripts
         private void Start()
         {
 #if UNITY_EDITOR || !UNITY_WEBGL
+
             //_Agent = Regulus.Remote.Client.Provider.CreateAgent(Astringent.Game20220410.Protocol.Provider.Create(), TcpConnecter);
             _Agent = Regulus.Remote.Client.Provider.CreateAgent(Astringent.Game20220410.Protocol.Provider.Create(), WebConnecter);
+
 #else
             
 #endif
@@ -51,8 +53,8 @@ namespace Astringent.Game20220410.Scripts
         public void StartConnect()
         {
 #if UNITY_EDITOR || !UNITY_WEBGL
-            //TcpConnecter.Connect("127.0.0.1:53772");
-            WebConnecter.Connect("127.0.0.1:53771");
+            //TcpConnecter.Connect("127.0.0.1:53004");
+            WebConnecter.Connect("localhost:53100");
 #else
             
 #endif

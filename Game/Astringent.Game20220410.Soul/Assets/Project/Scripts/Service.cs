@@ -64,11 +64,6 @@ namespace Astringent.Game20220410.Scripts
             
             {
                 var web = new Soul.Sources.Web.Listener3();
-                Regulus.Remote.Soul.IListenable listenable = web;
-                listenable.StreamableEnterEvent += (s) =>
-                {
-                    UnityEngine.Debug.Log("web connected");
-                };
                 listener.Add(web);
                 web.Bind($"http://*:{WebPort}/");
                 _Closes.Add(() => web.Close());
