@@ -6,13 +6,18 @@ using System.Linq;
 using static Astringent.Game20220410.Soul.Sources.INotifierExpansions;
 using static Astringent.Game20220410.Soul.Sources.PropertyExpansions;
 using System;
+using Regulus.Remote.Ghost;
 
 namespace Astringent.Game20220410.Scripts
 {
     public class Agent : MonoBehaviour
     {
-        private Regulus.Remote.Client.TcpConnectSet _Set;
+        
         UniRx.CompositeDisposable _Disposable;
+
+        public Connecter TcpConnecter;
+        public Connecter WebConnecter;
+        private IAgent _Agent;
 
         public Agent()
         {
@@ -20,15 +25,17 @@ namespace Astringent.Game20220410.Scripts
         }
         private void Start()
         {
-
-            var set = Regulus.Remote.Client.Provider.CreateTcpAgent(Astringent.Game20220410.Protocol.Provider.Create());
+#if UNITY_EDITOR || !UNITY_WEBGL
+            //_Agent = Regulus.Remote.Client.Provider.CreateAgent(Astringent.Game20220410.Protocol.Provider.Create(), TcpConnecter);
+            _Agent = Regulus.Remote.Client.Provider.CreateAgent(Astringent.Game20220410.Protocol.Provider.Create(), WebConnecter);
+#else
             
+#endif
 
-            _Set = set;
 
-            _Set.Agent.QueryNotifier<Astringent.Game20220410.Protocol.IPlayer>().Supply += _GetPlayer;
-            var moveingStateObs = from plr in _Set.Agent.QueryNotifier<Astringent.Game20220410.Protocol.IPlayer>().SupplyEvent()
-                        from actor in _Set.Agent.QueryNotifier<Astringent.Game20220410.Protocol.IActor>().SupplyEvent()
+            _Agent.QueryNotifier<Astringent.Game20220410.Protocol.IPlayer>().Supply += _GetPlayer;
+            var moveingStateObs = from plr in _Agent.QueryNotifier<Astringent.Game20220410.Protocol.IPlayer>().SupplyEvent()
+                        from actor in _Agent.QueryNotifier<Astringent.Game20220410.Protocol.IActor>().SupplyEvent()
                             where actor.Id == plr.Id
                         from state in actor.MoveingState.ChangeObservable()
                         select state;
@@ -43,7 +50,12 @@ namespace Astringent.Game20220410.Scripts
 
         public void StartConnect()
         {
-            _Set.Connecter.Connect(new System.Net.IPEndPoint(System.Net.IPAddress.Parse("127.0.0.1"), 53003));
+#if UNITY_EDITOR || !UNITY_WEBGL
+            //TcpConnecter.Connect("127.0.0.1:53772");
+            WebConnecter.Connect("127.0.0.1:53771");
+#else
+            
+#endif
         }
         private void _GetPlayer(IPlayer obj)
         {
@@ -52,12 +64,12 @@ namespace Astringent.Game20220410.Scripts
 
         private void Update()
         {
-            _Set.Agent.Update();
+            _Agent.Update();
         }
 
         public void Stop()
         {
-            var obs = from player in _Set.Agent.QueryNotifier<IPlayer>().SupplyEvent().First()
+            var obs = from player in _Agent.QueryNotifier<IPlayer>().SupplyEvent().First()
                       from _ in player.SetDirection(new Unity.Mathematics.float3(0, 0, 0)).RemoteValue()
                       select _;
 
@@ -66,7 +78,7 @@ namespace Astringent.Game20220410.Scripts
         }
         public void Move()
         {
-            var obs = from player in _Set.Agent.QueryNotifier<IPlayer>().SupplyEvent().First()
+            var obs = from player in _Agent.QueryNotifier<IPlayer>().SupplyEvent().First()
                       from _ in player.SetDirection(new Unity.Mathematics.float3(1, 0, 0)).RemoteValue()
                       select _;
 

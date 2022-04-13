@@ -20,7 +20,7 @@ namespace Astringent.Game20220410.Dots.Systems
             {
                 var interval = (float)(nowTime - move_state.StartTime);
                 translation.Value = move_state.Position + move_state.Vector * interval;
-            }).Run();
+            }).ScheduleParallel();
 
 
             

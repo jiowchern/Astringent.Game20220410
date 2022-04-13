@@ -6,7 +6,10 @@ using System.Collections.Generic;
 
 namespace Astringent.Game20220410.Scripts
 {
-    public class ActorPrototypeCreater : MonoBehaviour, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
+}
+namespace Astringent.Game20220410.Scripts
+{
+    public class ActorPrototypeProvider : MonoBehaviour, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
     {
         public GameObject Actor;
         public static Entity Prototype { get; private set; }

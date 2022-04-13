@@ -30,6 +30,7 @@ namespace Astringent.Game20220410.Scripts
         }
 
         public int TcpPort;
+        public int WebPort;
 
         readonly System.Collections.Concurrent.ConcurrentQueue<Regulus.Remote.IBinder> _AddBinders;        
         readonly System.Collections.Concurrent.ConcurrentQueue<Regulus.Remote.IBinder> _RemoveBinders;
@@ -62,10 +63,15 @@ namespace Astringent.Game20220410.Scripts
 
             
             {
-                /*var web = new Regulus.Remote.Server.Web.Listener();
+                var web = new Soul.Sources.Web.Listener3();
+                Regulus.Remote.Soul.IListenable listenable = web;
+                listenable.StreamableEnterEvent += (s) =>
+                {
+                    UnityEngine.Debug.Log("web connected");
+                };
                 listener.Add(web);
-                web.Bind($"http://*:{53003}/");
-                Closes.Add(() => web.Close());*/
+                web.Bind($"http://*:{WebPort}/");
+                _Closes.Add(() => web.Close());
             }
             
             var protocol = Astringent.Game20220410.Protocol.Provider.Create();

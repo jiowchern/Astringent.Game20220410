@@ -42,7 +42,7 @@ namespace Astringent.Game20220410.Scripts
         internal Entity Spawn(long id)
         {
             var entityManager = Service.GetWorld().EntityManager;
-            var entity = entityManager.Instantiate(ActorPrototypeCreater.Prototype);
+            var entity = entityManager.Instantiate(ActorPrototypeProvider.Prototype);
             entityManager.SetComponentData(entity, new Protocol.ActorAttributes { Id = id, Speed = 1f });
             return entity;
 
