@@ -254,7 +254,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TcpPort: 53004
-  WebPort: 53100
+  WebPort: 53005
   BinderEnterEvent:
     m_PersistentCalls:
       m_Calls:

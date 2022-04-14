@@ -63,10 +63,11 @@ namespace Astringent.Game20220410.Scripts
 
             
             {
-                var web = new Soul.Sources.Web.Listener3();
-                listener.Add(web);
-                web.Bind($"http://*:{WebPort}/");
-                _Closes.Add(() => web.Close());
+                var tcp = new Regulus.Remote.Server.Tcp.Listener();
+                listener.Add(tcp);
+                tcp.Bind(WebPort);
+                _Closes.Add(() => tcp.Close());
+                
             }
             
             var protocol = Astringent.Game20220410.Protocol.Provider.Create();

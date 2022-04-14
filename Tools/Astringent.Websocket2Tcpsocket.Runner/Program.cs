@@ -1,38 +1,35 @@
-﻿using System;
+﻿using Regulus.Utility.WindowConsoleAppliction;
+using System;
 
 namespace Astringent.Websocket2Tcpsocket.Runner
 {
     internal class Program
     {
+        
         /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="webport"></param>
-    /// <param name="tcpport"></param>
-    
-        static void  Main(ushort webport,ushort tcpport)
+        /// 
+        /// </summary>
+        /// <param name="web"></param>
+        /// <param name="tcp"></param>
+        static void  Main(string web,string tcp)
         {
-            webport = 53100;
-            tcpport = 53101;            
-            
-            var tcpListener = new Regulus.Network.Tcp.Listener();
-            tcpListener.Bind(tcpport);
-            tcpListener.AcceptEvent += (p) => 
-            {
+            //web = "http://*:53100/";
+            //tcp = "127.0.0.1:53005";
 
-            };
-            
-            // create tcp connecter
-            var tcpConnecter = new Regulus.Network.Tcp.Connecter();
-            tcpConnecter.Connect(new System.Net.IPEndPoint(System.Net.IPAddress.Parse("127.0.0.1") , tcpport)).GetAwaiter().GetResult();
-            
-            // create web listener 
+            System.Net.IPEndPoint tcpEndPoint;
+            if (!System.Net.IPEndPoint.TryParse(tcp , out tcpEndPoint))
+            {
+                System.Console.WriteLine("error tcp endpoint format.");
+                return;
+            }
+
+            var console = new Console(tcpEndPoint);
             var webListener = new Regulus.Network.Web.Listener();
-            webListener.AcceptEvent += (s) => { };
-            webListener.Bind($"http://*:{webport}/");
-            // create web connecter
-            var webConnecter = new Regulus.Network.Web.Connecter(new System.Net.WebSockets.ClientWebSocket());
-            webConnecter.ConnectAsync($"ws://127.0.0.1:{webport}/").GetAwaiter().GetResult();
+            webListener.AcceptEvent += console.Push;
+            webListener.Bind(web);
+
+            console.Run();
+
         }
     }
 }

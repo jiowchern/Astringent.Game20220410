@@ -53,7 +53,7 @@ namespace Astringent.Game20220410.Scripts
         public void StartConnect()
         {
 #if UNITY_EDITOR || !UNITY_WEBGL
-            //TcpConnecter.Connect("127.0.0.1:53004");
+            //TcpConnecter.Connect("127.0.0.1:53100");
             WebConnecter.Connect("localhost:53100");
 #else
             
