@@ -58,6 +58,7 @@ namespace Astringent.Game20220410.Sources
         void IDisposable.Dispose()
         {
             Scripts.Service.GetWorld().GetExistingSystem<Dots.Systems.MoveSystem>().StateEvent -= _UpdateMoveingState;
+            Scripts.Service.GetWorld().EntityManager.DestroyEntity(Entity);
             _Remover();
         }
 

@@ -48,10 +48,11 @@ namespace Astringent.Websocket2Tcpsocket.Runner
                 Regulus.Network.IStreamable tcpStream = tcpConnecter;
                 var t1 = System.Threading.Tasks.Task.Run(async () => {
                     var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+                    byte[] receive = new byte[16384];
                     while (Enable)
                     {
                         
-                        byte[] receive = new byte[16384];
+                        
                         var receiveCount = await webStream.Receive(receive, 0, receive.Length);
                         int sendCount = 0;
                         stopwatch.Restart();
@@ -67,10 +68,11 @@ namespace Astringent.Websocket2Tcpsocket.Runner
                 var t2 = System.Threading.Tasks.Task.Run(async () =>
                 {
                     var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+                    byte[] receive = new byte[16384];
                     while (Enable)
                     {
                         
-                        byte[] receive = new byte[16384];
+                        
                         var receiveCount = await tcpStream.Receive(receive, 0, receive.Length);
                         int sendCount = 0;
                         stopwatch.Restart();

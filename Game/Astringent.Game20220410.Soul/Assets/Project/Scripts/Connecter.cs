@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Astringent.Game20220410.Scripts
 {
-    public abstract class Connecter : MonoBehaviour, Regulus.Network.IStreamable
+    public abstract class Connecter : Regulus.Network.IStreamable
     {
         protected abstract Regulus.Remote.IWaitableValue<int> _Receive(byte[] buffer, int offset, int count);
         Regulus.Remote.IWaitableValue<int> IStreamable.Receive(byte[] buffer, int offset, int count)
@@ -23,5 +23,7 @@ namespace Astringent.Game20220410.Scripts
 
         public abstract void Connect(string address);
         public abstract void Disconnect();
+
+        public abstract void Update();
     }
 }

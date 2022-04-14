@@ -135,7 +135,7 @@ GameObject:
   - component: {fileID: 890122825}
   - component: {fileID: 890122824}
   m_Layer: 0
-  m_Name: ActorPrototypeProvider
+  m_Name: SoulPrototypesProvider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -150,10 +150,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 890122823}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 769f608b9b67d7243a919d679d5cc80e, type: 3}
+  m_Script: {fileID: 11500000, guid: 954866f001ec7e64a8c2b0e0c4d3e1cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Actor: {fileID: 2746134135748770915, guid: 28e104872e31bb14d92176683b4e811b, type: 3}
+  ActorPrefab: {fileID: 3314361198021028386, guid: a57c639e4cbd9544892e91af1bd25ecf, type: 3}
 --- !u!114 &890122825
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -192,7 +192,7 @@ GameObject:
   - component: {fileID: 903955248}
   - component: {fileID: 903955249}
   m_Layer: 0
-  m_Name: ActorSpawner
+  m_Name: Users
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -253,8 +253,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a398d9137ff78b40b231a70946be2a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TcpPort: 53004
-  WebPort: 53005
+  TcpPort: 53005
   BinderEnterEvent:
     m_PersistentCalls:
       m_Calls:

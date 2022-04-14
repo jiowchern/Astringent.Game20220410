@@ -21,25 +21,7 @@ namespace Astringent.Game20220410.Scripts
 
 
         }
-        private async void Update()
-        {
 
-#if UNITY_EDITOR || !UNITY_WEBGL
-            _Socket.DispatchMessageQueue();
-#endif
-
-            if (_Socket.State == WebSocketState.Open)
-            {
-                byte data;
-                System.Collections.Generic.List<byte> buffer = new System.Collections.Generic.List<byte>();
-                while (_Writes.TryDequeue(out data))
-                {
-                    buffer.Add(data);
-                }
-                if (buffer.Count > 0)
-                    await _Socket.Send(buffer.ToArray());
-            }
-        }
 
 
         private void _Close(WebSocketCloseCode closeCode)
@@ -125,6 +107,25 @@ namespace Astringent.Game20220410.Scripts
             _Socket.OnMessage -= _Message;
             _Socket.OnClose -= _Close;
             _Socket.Close();
+        }
+
+        public override async void Update()
+        {
+#if UNITY_EDITOR || !UNITY_WEBGL
+            _Socket.DispatchMessageQueue();
+#endif
+
+            if (_Socket.State == WebSocketState.Open)
+            {
+                byte data;
+                System.Collections.Generic.List<byte> buffer = new System.Collections.Generic.List<byte>();
+                while (_Writes.TryDequeue(out data))
+                {
+                    buffer.Add(data);
+                }
+                if (buffer.Count > 0)
+                    await _Socket.Send(buffer.ToArray());
+            }
         }
     }
 }

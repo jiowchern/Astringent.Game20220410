@@ -3,38 +3,44 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UniRx;
 using System.Linq;
-using static Astringent.Game20220410.Soul.Sources.INotifierExpansions;
-using static Astringent.Game20220410.Soul.Sources.PropertyExpansions;
-using System;
+
 using Regulus.Remote.Ghost;
 
 namespace Astringent.Game20220410.Scripts
 {
     public class Agent : MonoBehaviour
     {
-        
+        public static Unity.Entities.World GetWorld()
+        {
+            return Unity.Entities.World.DefaultGameObjectInjectionWorld;
+        }
+        public static IAgent FindAgent()
+        {
+            return  UnityEngine.GameObject.FindObjectOfType<Agent>()._Agent;
+        }
+
         UniRx.CompositeDisposable _Disposable;
 
-        public Connecter TcpConnecter;
-        public Connecter WebConnecter;
+        readonly Connecter _Connecter;
+        readonly string _EndPoint;
         private IAgent _Agent;
 
         public Agent()
         {
+            _Connecter = new TcpSocketConnecter();
+            _EndPoint = "127.0.0.1:53005";
+#if UNITY_WEBGL
+            _Connecter = new WebSocketConnecter();
+            _EndPoint = "127.0.0.1:53100";            
+#endif
             _Disposable = new CompositeDisposable();
         }
         private void Start()
         {
-#if UNITY_EDITOR || !UNITY_WEBGL
 
-            //_Agent = Regulus.Remote.Client.Provider.CreateAgent(Astringent.Game20220410.Protocol.Provider.Create(), TcpConnecter);
-            _Agent = Regulus.Remote.Client.Provider.CreateAgent(Astringent.Game20220410.Protocol.Provider.Create(), WebConnecter);
 
-#else
+            _Agent = Regulus.Remote.Client.Provider.CreateAgent(Astringent.Game20220410.Protocol.Provider.Create(), _Connecter);
             
-#endif
-
-
             _Agent.QueryNotifier<Astringent.Game20220410.Protocol.IPlayer>().Supply += _GetPlayer;
             var moveingStateObs = from plr in _Agent.QueryNotifier<Astringent.Game20220410.Protocol.IPlayer>().SupplyEvent()
                         from actor in _Agent.QueryNotifier<Astringent.Game20220410.Protocol.IActor>().SupplyEvent()
@@ -49,15 +55,15 @@ namespace Astringent.Game20220410.Scripts
         {
             UnityEngine.Debug.Log($"MoveingState {state.Vector}");
         }
+        public void Disconnect()
+        {
+            _Connecter.Disconnect();
 
+        }
         public void StartConnect()
         {
-#if UNITY_EDITOR || !UNITY_WEBGL
-            //TcpConnecter.Connect("127.0.0.1:53100");
-            WebConnecter.Connect("localhost:53100");
-#else
-            
-#endif
+            _Connecter.Connect(_EndPoint);
+
         }
         private void _GetPlayer(IPlayer obj)
         {
@@ -66,35 +72,18 @@ namespace Astringent.Game20220410.Scripts
 
         private void Update()
         {
+            _Connecter.Update();
             _Agent.Update();
         }
 
-        public void Stop()
-        {
-            var obs = from player in _Agent.QueryNotifier<IPlayer>().SupplyEvent().First()
-                      from _ in player.SetDirection(new Unity.Mathematics.float3(0, 0, 0)).RemoteValue()
-                      select _;
+      
 
 
-            _Disposable.Add(obs.ObserveOnMainThread().Subscribe(i => UnityEngine.Debug.Log("stop"))); 
-        }
-        public void Move()
-        {
-            var obs = from player in _Agent.QueryNotifier<IPlayer>().SupplyEvent().First()
-                      from _ in player.SetDirection(new Unity.Mathematics.float3(1, 0, 0)).RemoteValue()
-                      select _;
-
-            _Disposable.Add(obs.ObserveOnMainThread().Subscribe(_MoveDone));
-        }
-
-
-        private void _MoveDone(bool obj)
-        {
-            UnityEngine.Debug.Log("move done");
-        }
+   
 
         private void OnDestroy()
         {
+            _Agent.Dispose();
             _Disposable.Dispose();
         }
     }

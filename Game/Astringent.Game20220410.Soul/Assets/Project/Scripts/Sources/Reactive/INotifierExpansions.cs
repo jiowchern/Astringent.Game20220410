@@ -2,7 +2,7 @@
 using System;
 using UniRx;
 
-namespace Astringent.Game20220410.Soul.Sources
+namespace Astringent.Game20220410
 {
     public static class INotifierExpansions
     {

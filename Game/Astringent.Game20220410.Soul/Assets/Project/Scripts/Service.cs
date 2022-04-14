@@ -30,7 +30,7 @@ namespace Astringent.Game20220410.Scripts
         }
 
         public int TcpPort;
-        public int WebPort;
+        
 
         readonly System.Collections.Concurrent.ConcurrentQueue<Regulus.Remote.IBinder> _AddBinders;        
         readonly System.Collections.Concurrent.ConcurrentQueue<Regulus.Remote.IBinder> _RemoveBinders;
@@ -53,25 +53,11 @@ namespace Astringent.Game20220410.Scripts
         // Start is called before the first frame update
         void Start()
         {
-            var listener = new Soul.Sources.Listener();
-            {
-                var tcp = new Regulus.Remote.Server.Tcp.Listener();
-                listener.Add(tcp);
-                tcp.Bind(TcpPort);
-                _Closes.Add(() => tcp.Close());
-            }
-
-            
-            {
-                var tcp = new Regulus.Remote.Server.Tcp.Listener();
-                listener.Add(tcp);
-                tcp.Bind(WebPort);
-                _Closes.Add(() => tcp.Close());
-                
-            }
-            
             var protocol = Astringent.Game20220410.Protocol.Provider.Create();
-            _Service = Regulus.Remote.Server.Provider.CreateService(this, protocol, listener);
+            var set = Regulus.Remote.Server.Provider.CreateTcpService(this, protocol);
+            set.Listener.Bind(TcpPort);
+            _Service = set.Service;
+            _Closes.Add(() => set.Listener.Close());
         }
         
 
@@ -82,8 +68,6 @@ namespace Astringent.Game20220410.Scripts
             while(_AddBinders.TryDequeue(out binder))
             {
                 BinderEnterEvent.Invoke(binder);
-
-
             }
             while (_RemoveBinders.TryDequeue(out binder))
             {

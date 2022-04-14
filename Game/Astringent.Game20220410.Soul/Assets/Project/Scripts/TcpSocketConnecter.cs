@@ -2,6 +2,7 @@
 
 namespace Astringent.Game20220410.Scripts
 {
+    
     public class TcpSocketConnecter : Connecter
     {
         readonly Regulus.Network.Tcp.Connecter _Connecter;
@@ -24,6 +25,11 @@ namespace Astringent.Game20220410.Scripts
         public override void Disconnect()
         {
             _Connecter.Disconnect();
+        }
+
+        public override void Update()
+        {
+
         }
 
         protected override Regulus.Remote.IWaitableValue<int> _Receive(byte[] buffer, int offset, int count)

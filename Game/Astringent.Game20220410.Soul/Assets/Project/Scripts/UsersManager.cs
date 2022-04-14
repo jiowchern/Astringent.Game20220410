@@ -10,7 +10,7 @@ using Unity.Mathematics;
 
 namespace Astringent.Game20220410.Scripts
 {
-    public class ActorSpawner : MonoBehaviour 
+    public class UsersManager : MonoBehaviour 
     {
         
 
@@ -20,7 +20,7 @@ namespace Astringent.Game20220410.Scripts
         readonly IdDispenser _IdDispenser;
 
         readonly System.Collections.Generic.List<User> _Users;
-        public ActorSpawner()
+        public UsersManager()
         {
             _IdDispenser = new IdDispenser();
             _Users  = new System.Collections.Generic.List<User>();
@@ -42,7 +42,7 @@ namespace Astringent.Game20220410.Scripts
         internal Entity Spawn(long id)
         {
             var entityManager = Service.GetWorld().EntityManager;
-            var entity = entityManager.Instantiate(ActorPrototypeProvider.Prototype);
+            var entity = entityManager.Instantiate(SoulPrototypesProvider.ActorEntity);
             entityManager.SetComponentData(entity, new Protocol.ActorAttributes { Id = id, Speed = 1f });
             return entity;
 

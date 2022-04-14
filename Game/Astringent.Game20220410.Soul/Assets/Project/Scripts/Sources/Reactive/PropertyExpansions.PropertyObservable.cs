@@ -1,7 +1,7 @@
 ﻿using Regulus.Remote;
 using System;
 
-namespace Astringent.Game20220410.Soul.Sources
+namespace Astringent.Game20220410
 {
     public static partial class PropertyExpansions
     {
