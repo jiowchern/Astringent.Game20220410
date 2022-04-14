@@ -47,29 +47,41 @@ namespace Astringent.Websocket2Tcpsocket.Runner
                 Regulus.Network.IStreamable webStream = peer;
                 Regulus.Network.IStreamable tcpStream = tcpConnecter;
                 var t1 = System.Threading.Tasks.Task.Run(async () => {
+                    var stopwatch = System.Diagnostics.Stopwatch.StartNew();
                     while (Enable)
                     {
+                        
                         byte[] receive = new byte[16384];
                         var receiveCount = await webStream.Receive(receive, 0, receive.Length);
                         int sendCount = 0;
+                        stopwatch.Restart();
                         while (receiveCount - sendCount > 0)
                         {
                             sendCount += await tcpStream.Send(receive, sendCount, receiveCount - sendCount);
                         }
+                        stopwatch.Stop();
+                        System.Console.WriteLine($"w->t {sendCount}byte {stopwatch.Elapsed.TotalSeconds}s");
                     }
                 });
 
                 var t2 = System.Threading.Tasks.Task.Run(async () =>
                 {
+                    var stopwatch = System.Diagnostics.Stopwatch.StartNew();
                     while (Enable)
                     {
+                        
                         byte[] receive = new byte[16384];
                         var receiveCount = await tcpStream.Receive(receive, 0, receive.Length);
                         int sendCount = 0;
+                        stopwatch.Restart();
                         while (receiveCount - sendCount > 0)
                         {
                             sendCount += await webStream.Send(receive, sendCount, receiveCount - sendCount);
                         }
+                        stopwatch.Stop();
+
+                        System.Console.WriteLine($"t->w {sendCount}byte {stopwatch.Elapsed.TotalSeconds}s");
+                        
                     }
                 });
 

@@ -1,1 +1,1 @@
-dotnet build -o ./Game/Astringent.Game20220410.Soul/Assets/Project/Protocol --no-dependencies  ./Base/Astringent.Game20220410.Protocol/
+dotnet run -c Release --project .\Tools\Astringent.Websocket2Tcpsocket.Runner\ -- --web http://*:53100/ --tcp 127.0.0.1:53005
