@@ -5,7 +5,7 @@ namespace Astringent.Websocket2Tcpsocket.Runner
     class Tranport : System.IDisposable
     {
         
-        public bool Enable ;
+        public volatile bool Enable ;
         private readonly System.Threading.Tasks.Task _Task;
 
         public Tranport(Peer peer, System.Net.EndPoint tcp)

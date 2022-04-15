@@ -2,6 +2,8 @@
 using Unity.Entities;
 using Unity.Jobs;
 using Unity.Transforms;
+
+
 namespace Astringent.Game20220410.Dots.Systems
 {
     public partial class MoveSystem : Unity.Entities.SystemBase 
@@ -16,26 +18,26 @@ namespace Astringent.Game20220410.Dots.Systems
         protected override void OnUpdate()
         {
             var nowTime = Service.GetWorld().Time.ElapsedTime;
-            Entities.ForEach((ref Translation translation, ref Protocol.MoveingState move_state) =>
+            Entities.ForEach((ref Translation translation, ref Dots.MoveingState move_state) =>
             {
-                var interval = (float)(nowTime - move_state.StartTime);
-                translation.Value = move_state.Position + move_state.Vector * interval;
+                var interval = (float)(nowTime - move_state.Data.StartTime);
+                translation.Value = move_state.Data.Position + move_state.Data.Vector * interval;
             }).ScheduleParallel();
 
 
             
-            Entities.WithoutBurst().ForEach((ref Direction dir,ref Protocol.ActorAttributes actor, ref Translation translation,ref Protocol.MoveingState move_state) =>
+            Entities.WithoutBurst().ForEach((ref Direction dir,ref Dots.ActorAttributes actor, ref Translation translation,ref Dots.MoveingState move_state) =>
             {
                 
-                if (actor.Direction.Equals(dir.Value))
+                if (actor.Data.Direction.Equals(dir.Value))
                 {
                     return;
                 }
-                actor.Direction = dir.Value;
-                move_state.StartTime = nowTime;
-                move_state.Position = translation.Value;
-                move_state.Vector = dir.Value * actor.Speed;
-                StateEvent(actor.Id,move_state);
+                actor.Data.Direction = dir.Value;
+                move_state.Data.StartTime = nowTime;
+                move_state.Data.Position = translation.Value;
+                move_state.Data.Vector = dir.Value * actor.Data.Speed;
+                StateEvent(actor.Data.Id,move_state.Data);
             }).Run();
 
 

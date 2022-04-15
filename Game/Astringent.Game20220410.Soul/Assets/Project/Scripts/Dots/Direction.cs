@@ -6,8 +6,8 @@ using System;
 
 namespace Astringent.Game20220410.Dots
 {
-   
     
+
     public struct Direction : IComponentData
     {
         public float3 Value;
