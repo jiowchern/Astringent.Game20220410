@@ -27,11 +27,14 @@ namespace Astringent.Game20220410.Scripts
 
         public Agent()
         {
-            _Connecter = new TcpSocketConnecter();
-            _EndPoint = "127.0.0.1:53005";
+            
+            
 #if UNITY_WEBGL
             _Connecter = new WebSocketConnecter();
-            _EndPoint = "127.0.0.1:53100";            
+            _EndPoint = "127.0.0.1:53100";
+#else
+            _Connecter = new TcpSocketConnecter();
+            _EndPoint = "127.0.0.1:53005";
 #endif
             _Disposable = new CompositeDisposable();
         }
