@@ -22,8 +22,12 @@ namespace Astringent.Websocket2Tcpsocket.Runner
                 
                 peer.ErrorEvent += e => {
                     
-                    System.Console.WriteLine($"web error {e}.");
+                    System.Console.WriteLine($"web error {e}.");                    
                     Enable = false;
+
+                    System.IDisposable disposable = peer;
+                    disposable.Dispose();                    
+                    tcpConnecter.Disconnect();
                 };
 
                 tcpConnecter.SocketErrorEvent += e => {
@@ -31,6 +35,9 @@ namespace Astringent.Websocket2Tcpsocket.Runner
                         return;
                     System.Console.WriteLine($"tcp error {e}.");
                     Enable = false;
+
+                    System.IDisposable disposable = peer;
+                    disposable.Dispose();
                 };
 
                 if (!result)
@@ -39,7 +46,7 @@ namespace Astringent.Websocket2Tcpsocket.Runner
                     {
 
                     }
-                        System.Console.WriteLine("tcp connect fail.");
+                    System.Console.WriteLine("tcp connect fail.");
                     return;
                 }
 
@@ -51,8 +58,6 @@ namespace Astringent.Websocket2Tcpsocket.Runner
                     byte[] receive = new byte[16384];
                     while (Enable)
                     {
-                        
-                        
                         var receiveCount = await webStream.Receive(receive, 0, receive.Length);
                         int sendCount = 0;
                         stopwatch.Restart();
@@ -63,7 +68,12 @@ namespace Astringent.Websocket2Tcpsocket.Runner
                         stopwatch.Stop();
                         System.Console.WriteLine($"w->t {sendCount}byte {stopwatch.Elapsed.TotalSeconds}s");
                     }
+
+                    System.Console.WriteLine($"done w->t");
+                    
                 });
+
+
 
                 var t2 = System.Threading.Tasks.Task.Run(async () =>
                 {
@@ -71,9 +81,8 @@ namespace Astringent.Websocket2Tcpsocket.Runner
                     byte[] receive = new byte[16384];
                     while (Enable)
                     {
-                        
-                        
                         var receiveCount = await tcpStream.Receive(receive, 0, receive.Length);
+                        
                         int sendCount = 0;
                         stopwatch.Restart();
                         while (receiveCount - sendCount > 0)
@@ -85,26 +94,23 @@ namespace Astringent.Websocket2Tcpsocket.Runner
                         System.Console.WriteLine($"t->w {sendCount}byte {stopwatch.Elapsed.TotalSeconds}s");
                         
                     }
-                });
 
-                await t1;
-                await t2;
-
-                using (peer)
-                {
+                    System.Console.WriteLine($"done t->w");
                     
-                }
-                using (tcpConnecter)
-                {
+                });
+               
+                await t2;
+                await t1;
 
-                }
             });
+            
         }
 
         async void System.IDisposable.Dispose()
         {
             Enable = false;
             await _Task;
+            System.Console.WriteLine("close.");
         }
     }
 }

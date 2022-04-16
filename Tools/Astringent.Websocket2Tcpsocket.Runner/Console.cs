@@ -1,5 +1,5 @@
 ﻿using Regulus.Network.Web;
-using System;
+using System.Linq;
 using System.Net;
 using System.Threading;
 
@@ -35,19 +35,21 @@ namespace Astringent.Websocket2Tcpsocket.Runner
 
         protected override void _Update()
         {
+            var tranports = from t in _Tranports where t.Enable == false select t;
+
+            foreach (System.IDisposable tranport in tranports.ToArray())
+            {
+                 tranport.Dispose();
+            }
             var remove = _Tranports.RemoveAll(t => t.Enable == false);            
             if(remove > 0)
             {
                 System.Console.WriteLine($"remove count {remove}");
             }
         }
-
+        
         internal void Push(Peer peer)
         {
-            
-            
-          
-
             _Tranports.Add(new Tranport(peer , _TcpIp));
         }
     }

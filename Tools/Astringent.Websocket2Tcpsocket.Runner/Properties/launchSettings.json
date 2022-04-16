@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Astringent.Websocket2Tcpsocket.Runner": {
+      "commandName": "Project",
+      "commandLineArgs": "--web http://*:53100/ --tcp 127.0.0.1:53005"
+    }
+  }
+}

@@ -122,6 +122,8 @@ namespace Astringent.Game20220410
 
         public override void Disconnect()
         {
+            if (_Socket.State == WebSocketState.Closed)
+                return;
             _Socket.Close();
             _Socket.OnOpen -= _Open;
             _Socket.OnError -= _Error;
