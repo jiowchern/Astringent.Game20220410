@@ -68,12 +68,10 @@ namespace Astringent.Game20220410
             var pos = Input.mousePosition;
             Ray ray = Camera.main.ScreenPointToRay(pos);
 
-            Debug.DrawRay(ray.origin, ray.direction * 10, Color.yellow);
+            
             RaycastHit info;
             if (Physics.Raycast(ray, out info,Mathf.Infinity , 1 << 6) == false)
                 return;
-
-
 
             _Disposable.Clear();
             var obs = from player in agent.QueryNotifier<IPlayer>().SupplyEvent()

@@ -4,17 +4,19 @@ using System.Linq;
 using Astringent.Game20220410.Protocol;
 using System;
 using System.Collections.Generic;
+using Cinemachine;
 
 namespace Astringent.Game20220410
 {
-    public class ActorSpawner : AgentReactiveMonoBehaviour
+    public class ActorSpawner : AgentReactiveMonoBehaviour 
     {
         
         public GameObject ActorPrefab;
         public Cinemachine.CinemachineVirtualCameraBase FollowCamera;
 
         private void _Spawn(IActor obj,bool is_player)
-        {            
+        {
+            
             var actor = GameObject.Instantiate(ActorPrefab).GetComponent<Actor>();
             actor.Startup(obj);            
             if(is_player)
@@ -35,6 +37,8 @@ namespace Astringent.Game20220410
 
             yield return addActorObs.Subscribe((ret) => { _Spawn(ret.actor, ret.isPlayer); });
         }
+
+       
     }
 
 }
