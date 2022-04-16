@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections;
-using UniRx;
+
 namespace Astringent.Game20220410
 {
     public static class PropertyExpansions

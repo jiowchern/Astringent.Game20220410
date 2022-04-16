@@ -122,11 +122,12 @@ namespace Astringent.Game20220410
 
         public override void Disconnect()
         {
+            _Socket.Close();
             _Socket.OnOpen -= _Open;
             _Socket.OnError -= _Error;
             _Socket.OnMessage -= _Message;
             _Socket.OnClose -= _Close;
-            _Socket.Close();
+            
         }
     }
 }

@@ -3,10 +3,12 @@ using System;
 using UnityEngine;
 using System.Linq;
 using UniRx;
+using System.Collections.Generic;
+using Regulus.Remote.Ghost;
 
 namespace Astringent.Game20220410
 {
-    public class Actor : MonoBehaviour
+    public class Actor : AgentReactiveMonoBehaviour
     {
 
         readonly UniRx.CompositeDisposable _Disposable;
@@ -30,7 +32,7 @@ namespace Astringent.Game20220410
 
         private void _SetDestroy(IActor actor)
         {
-            var obs = from agent in AgentRx.GetObservable()
+            var obs = from agent in Observer
                       from a in agent.QueryNotifier<IActor>().UnsupplyEvent()
                       where a == actor
                       select a;
@@ -75,6 +77,11 @@ namespace Astringent.Game20220410
         private void OnDestroy()
         {
             _Release();
+        }
+
+        protected override IEnumerable<IDisposable> _Start(IAgent agent)
+        {
+            yield break;
         }
     }
 

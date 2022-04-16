@@ -3,22 +3,15 @@ using UniRx;
 using System.Linq;
 using Astringent.Game20220410.Protocol;
 using System;
+using System.Collections.Generic;
 
 namespace Astringent.Game20220410
 {
-    public class ActorSpawner : MonoBehaviour
+    public class ActorSpawner : AgentReactiveMonoBehaviour
     {
-        private IDisposable _Dispose;
+        
         public GameObject ActorPrefab;
-        private void Start()
-        {
-            if(_Dispose !=null)
-                _Dispose.Dispose();
-            var addActorObs =   from agent in AgentRx.GetObservable()
-                                from actor in agent.QueryNotifier<IActor>().SupplyEvent()
-                                select actor;
-            _Dispose = addActorObs.Subscribe(_Spawn);
-        }
+
 
         private void _Spawn(IActor obj)
         {
@@ -28,9 +21,14 @@ namespace Astringent.Game20220410
             UnityEngine.Debug.Log("get actor 2");
         }
 
-        private void OnDestroy()
+        
+
+        protected override IEnumerable<IDisposable> _Start(Regulus.Remote.Ghost.IAgent agent)
         {
-            _Dispose.Dispose();
+            var addActorObs = from actor in agent.QueryNotifier<IActor>().SupplyEvent()
+                              select actor;
+
+            yield return addActorObs.Subscribe(_Spawn);
         }
     }
 
