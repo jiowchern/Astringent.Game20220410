@@ -11,7 +11,7 @@ namespace Astringent.Game20220410
     {
         
         public GameObject ActorPrefab;
-        public Cinemachine.CinemachineVirtualCamera FollowCamera;
+        public Cinemachine.CinemachineVirtualCameraBase FollowCamera;
 
         private void _Spawn(IActor obj,bool is_player)
         {            
