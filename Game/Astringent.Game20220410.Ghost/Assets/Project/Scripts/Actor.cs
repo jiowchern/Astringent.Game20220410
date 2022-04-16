@@ -77,9 +77,10 @@ namespace Astringent.Game20220410
             _MoveAction();
         }
 
-        private void OnDestroy()
+        new private void OnDestroy()
         {
             _Release();
+            base.OnDestroy();
         }
 
         protected override IEnumerable<IDisposable> _Start(IAgent agent)

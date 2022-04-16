@@ -83,7 +83,7 @@ namespace Astringent.Game20220410.Sources
         }
         Value<bool> IPlayer.SetDirection(Unity.Mathematics.float3 dir)
         {
-            var direction = new Dots.Direction() { Value = Unity.Mathematics.math.normalizesafe(dir) };
+            var direction = new Dots.Direction() { Value = Unity.Mathematics.math.normalizesafe(new Unity.Mathematics.float3(dir.x,0,dir.z)) };
             Value<bool> value = new Value<bool>();
             UniRx.MainThreadDispatcher.Post((state) => {
                 var mgr = Scripts.Service.GetWorld().EntityManager;                

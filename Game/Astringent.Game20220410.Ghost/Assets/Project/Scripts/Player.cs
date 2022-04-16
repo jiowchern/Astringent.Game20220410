@@ -19,20 +19,12 @@ namespace Astringent.Game20220410
             _Disposable = new UniRx.CompositeDisposable();
         }
         // Start is called before the first frame update
-        void Start()
-        {
+        
 
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-
-        }
-
-        private void OnDestroy()
+         new private void OnDestroy()
         {
             _Disposable.Clear();
+            base.OnDestroy();
         }
 
         public void Stop()
@@ -66,14 +58,37 @@ namespace Astringent.Game20220410
 
         protected override IEnumerable<IDisposable> _Start(IAgent agent)
         {
+            yield return Observable.EveryUpdate().Where(_ => Input.GetMouseButtonDown(0)).Subscribe(_=>_Move(agent));
 
-
-            yield break;
+           
         }
 
-        private void _Follow(Actor obj)
+        private void _Move(IAgent agent)
         {
-          
+            var pos = Input.mousePosition;
+            Ray ray = Camera.main.ScreenPointToRay(pos);
+
+            Debug.DrawRay(ray.origin, ray.direction * 10, Color.yellow);
+            RaycastHit info;
+            if (Physics.Raycast(ray, out info,Mathf.Infinity , 1 << 6) == false)
+                return;
+
+
+
+            _Disposable.Clear();
+            var obs = from player in agent.QueryNotifier<IPlayer>().SupplyEvent()
+                      from actor in GameObject.FindObjectsOfType<Actor>()
+                      where player.Id.Value == actor.Id
+                      from _ in _Move(actor, player, info.point).RemoteValue()
+                      select _;
+
+            _Disposable.Add(obs.Subscribe(r=>UnityEngine.Debug.Log($"move done.")));
+        }
+
+        private Regulus.Remote.Value<bool> _Move(Actor actor, IPlayer player, Vector3 point)
+        {
+            var dir = actor.transform.TransformDirection(point);
+            return player.SetDirection(dir); 
         }
     }
 

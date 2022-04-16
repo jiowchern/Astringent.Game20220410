@@ -16,14 +16,14 @@ namespace Astringent.Game20220410
 
         public System.IObservable<Regulus.Remote.Ghost.IAgent> Observer => Agent.Observer;
 
-        private void OnDestroy()
+        protected void OnDestroy()
         {
             _CompositeDisposable.Clear();
             _Disposable.Dispose();
         }
 
-        
-        private void Start()
+
+        protected void Start()
         {
             var obs = from a in Agent.Observer
                       select a;
