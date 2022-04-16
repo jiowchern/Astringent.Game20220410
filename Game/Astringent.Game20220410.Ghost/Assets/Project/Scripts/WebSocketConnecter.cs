@@ -122,7 +122,8 @@ namespace Astringent.Game20220410
 
         public override void Disconnect()
         {
-            if (_Socket.State == WebSocketState.Closed)
+            UnityEngine.Debug.Log($"websocket state {_Socket.State}");
+            if (_Socket.State == WebSocketState.Closed || _Socket.State == WebSocketState.Closing)
                 return;
             _Socket.Close();
             _Socket.OnOpen -= _Open;
