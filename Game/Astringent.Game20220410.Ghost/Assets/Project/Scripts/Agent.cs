@@ -6,7 +6,9 @@ namespace Astringent.Game20220410
 {
     public class Agent : MonoBehaviour
     {
-
+        public static IObservable<IAgent> Observer { get {
+                return AgentRx.GetObservable();
+            } }
 
         public Connecter Connecter;
         public UnityEngine.UI.Text Message;
