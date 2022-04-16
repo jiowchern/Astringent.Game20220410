@@ -14,6 +14,9 @@ namespace Astringent.Game20220410
         readonly UniRx.CompositeDisposable _Disposable;
 
         System.Action _MoveAction;
+
+        public long Id { get; private set; }
+
         public Actor()
         {
             _MoveAction = () => { };
@@ -22,7 +25,7 @@ namespace Astringent.Game20220410
 
         public void Startup(IActor actor)
         {
-
+            Id = actor.Id.Value;
             _Release();
 
             _SetDestroy(actor);

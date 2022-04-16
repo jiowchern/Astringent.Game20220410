@@ -7,10 +7,12 @@ using System.Collections.Generic;
 using System;
 using Regulus.Remote.Ghost;
 
+
 namespace Astringent.Game20220410
 {
     public class Player : AgentReactiveMonoBehaviour 
     {
+        
         readonly UniRx.CompositeDisposable _Disposable;
         public Player()
         {
@@ -64,7 +66,14 @@ namespace Astringent.Game20220410
 
         protected override IEnumerable<IDisposable> _Start(IAgent agent)
         {
+
+
             yield break;
+        }
+
+        private void _Follow(Actor obj)
+        {
+          
         }
     }
 

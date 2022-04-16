@@ -11,14 +11,17 @@ namespace Astringent.Game20220410
     {
         
         public GameObject ActorPrefab;
+        public Cinemachine.CinemachineVirtualCamera FollowCamera;
 
-
-        private void _Spawn(IActor obj)
-        {
-            UnityEngine.Debug.Log("get actor 1");
+        private void _Spawn(IActor obj,bool is_player)
+        {            
             var actor = GameObject.Instantiate(ActorPrefab).GetComponent<Actor>();
-            actor.Startup(obj);
-            UnityEngine.Debug.Log("get actor 2");
+            actor.Startup(obj);            
+            if(is_player)
+            {
+                FollowCamera.Follow = actor.transform;
+                FollowCamera.LookAt = actor.transform;
+            }
         }
 
         
@@ -26,9 +29,11 @@ namespace Astringent.Game20220410
         protected override IEnumerable<IDisposable> _Start(Regulus.Remote.Ghost.IAgent agent)
         {
             var addActorObs = from actor in agent.QueryNotifier<IActor>().SupplyEvent()
-                              select actor;
+                              from player in agent.QueryNotifier<IPlayer>().SupplyEvent()
+                              let isPlayer = player.Id.Value == actor.Id.Value
+                              select new { actor , isPlayer };
 
-            yield return addActorObs.Subscribe(_Spawn);
+            yield return addActorObs.Subscribe((ret) => { _Spawn(ret.actor, ret.isPlayer); });
         }
     }
 
