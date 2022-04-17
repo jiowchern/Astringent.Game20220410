@@ -6,13 +6,26 @@ using Unity.Transforms;
 
 namespace Astringent.Game20220410.Dots.Systems
 {
-    public partial class MoveSystem : Unity.Entities.SystemBase 
+    public partial class MoveingSystem : Unity.Entities.SystemBase 
     {
+       
         
-        public event System.Action<long,Protocol.MoveingState> StateEvent;
-        public MoveSystem()
+        
+
+        protected override void OnCreate()
         {
-            StateEvent += (i,e) => { };
+            
+            base.OnCreate();
+        }
+
+        protected override void OnDestroy()
+        {
+         
+            base.OnDestroy();
+        }
+        public MoveingSystem()
+        {
+         
         }
         
         protected override void OnUpdate()
@@ -25,24 +38,23 @@ namespace Astringent.Game20220410.Dots.Systems
             }).ScheduleParallel();
 
 
+
             
-            Entities.WithoutBurst().ForEach((ref Dots.ActorAttributes actor, ref Dots.MoveingState move_state, in Direction dir, in Translation translation) =>
-            {
+            Entities.ForEach((ref Past past, ref Dots.MoveingState move_state, in Direction dir, in Dots.ActorAttributes attributes, in Translation translation) => {
                 
-                if (actor.Data.Direction.Equals(dir.Value))
-                {
+                if (UnsafeEuqaler.Equal(past.Direction, dir))
                     return;
-                }
-                actor.Data.Direction = dir.Value;
+                past.Direction = dir;
+
                 move_state.Data.StartTime = nowTime;
                 move_state.Data.Position = translation.Value;
-                move_state.Data.Vector = dir.Value * actor.Data.Speed;
-                StateEvent(actor.Data.Id,move_state.Data);
-            }).Run();
+                move_state.Data.Vector = dir.Value * attributes.Data.Speed;
+                
+                
+            }).ScheduleParallel();
 
+            
 
-
-          
         }
     }
 }

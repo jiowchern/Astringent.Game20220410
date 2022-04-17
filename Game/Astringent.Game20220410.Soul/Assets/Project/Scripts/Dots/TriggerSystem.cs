@@ -14,7 +14,7 @@ namespace Astringent.Game20220410.Dots.Systems
             void ITriggerEventsJobBase.Execute(TriggerEvent triggerEvent)
             {
                 
-                UnityEngine.Debug.Log($"trigger {triggerEvent.EntityA} : {triggerEvent.EntityB}");
+                //UnityEngine.Debug.Log($"trigger {triggerEvent.EntityA} : {triggerEvent.EntityB}");
             }
         }
         private StepPhysicsWorld _StepPhysicsWorld;

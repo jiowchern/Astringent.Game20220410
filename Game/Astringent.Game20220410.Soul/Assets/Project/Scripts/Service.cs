@@ -8,7 +8,9 @@ using Unity.Mathematics;
 using Unity.Rendering;
 using Unity.Transforms;
 
-
+/// <summary>
+/// UNITY_DISABLE_AUTOMATIC_SYSTEM_BOOTSTRAP
+/// </summary>
 
 namespace Astringent.Game20220410.Scripts
 {
@@ -18,14 +20,14 @@ namespace Astringent.Game20220410.Scripts
         
         public static World GetWorld()
         {
-            /*foreach (var world in World.All)
+/*            foreach (var world in World.All)
             {
                 if (world.Name != WorldName)
                     continue;
                 return world;                
             }
             return new World(WorldName);*/
-
+            
             return World.DefaultGameObjectInjectionWorld;
         }
 

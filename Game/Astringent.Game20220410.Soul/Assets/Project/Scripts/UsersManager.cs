@@ -10,20 +10,14 @@ using Unity.Mathematics;
 
 namespace Astringent.Game20220410.Scripts
 {
-    
     public class UsersManager : MonoBehaviour 
     {
-        
-
-        
-        
-
-        readonly IdDispenser _IdDispenser;
-
         readonly System.Collections.Generic.List<User> _Users;
+        private readonly EntitesKeeper _Keeper;
+
         public UsersManager()
         {
-            _IdDispenser = new IdDispenser();
+            _Keeper = new EntitesKeeper();
             _Users  = new System.Collections.Generic.List<User>();
         }
         
@@ -36,25 +30,16 @@ namespace Astringent.Game20220410.Scripts
         {
             foreach (var user in _Users)
             {
-                user.SyncStates();
+                user.Update ();
             }
         }
 
-        internal Entity Spawn(long id)
-        {
-            var entityManager = Service.GetWorld().EntityManager;
-            var entity = entityManager.Instantiate(SoulPrototypesProvider.ActorEntity);
-            entityManager.SetComponentData<Dots.ActorAttributes>(entity, new Protocol.Attributes {  Id = id, Speed = 1f } );
-            return entity;
-
-
-        }
-
+        
       
         public void BinderEnter(Regulus.Remote.IBinder binder)
         {
-            var id = _IdDispenser.Dispatch(binder);
-            _Users.Add(new User(id , Spawn(id), binder));
+           
+           _Users.Add(new User(_Keeper , binder));
 
 
         }

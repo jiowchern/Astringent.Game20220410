@@ -249,8 +249,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 890122826}
-  - component: {fileID: 890122825}
   - component: {fileID: 890122824}
+  - component: {fileID: 890122825}
   m_Layer: 0
   m_Name: SoulPrototypesProvider
   m_TagString: Untagged

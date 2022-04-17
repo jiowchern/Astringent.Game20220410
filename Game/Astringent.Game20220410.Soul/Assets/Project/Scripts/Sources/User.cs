@@ -7,91 +7,67 @@ using Unity.Entities;
 
 namespace Astringent.Game20220410.Sources
 {
-
-    public class User : System.IDisposable ,Astringent.Game20220410.Protocol.IEntity, IPlayer
+    public class User : System.IDisposable 
     {
         
-        public readonly Entity Entity;
+        public readonly EntitesKeeper _Keeper;
         public readonly IBinder Binder;
-        public readonly int Id;
+        
 
-        Property<MoveingState> _MoveingState;
-        Property<Attributes> _Attributes;
-        float _SyncMovingStateInterval;
+        
         System.Action _Remover;
-        public User(int id,Entity entity, Regulus.Remote.IBinder binder)
+
+        readonly Regulus.Utility.StatusMachine _Machine;
+        public User(EntitesKeeper keeper, Regulus.Remote.IBinder binder)
         {
-            Id = id;
-            Entity = entity;
+            _Machine = new Regulus.Utility.StatusMachine();
+            
+            _Keeper = keeper;
             this.Binder = binder;
 
-            _MoveingState = new Property<MoveingState>();
-            _Attributes = new Property<Attributes>();
-            var actor = Binder.Bind<IEntity>(this);
-            var player = Binder.Bind<IPlayer>(this);
+            
 
             _Remover = () => {
-                Binder.Unbind(actor);
-                Binder.Unbind(player);
+               
             };
 
             UnityEngine.Debug.Log("server get player");
-            Scripts.Service.GetWorld().GetExistingSystem<Dots.Systems.MoveSystem>().StateEvent += _UpdateMoveingState;
+            
+
+
+            _ToLogin();
         }
 
-        private void _UpdateMoveingState(long id, MoveingState obj)
+        private void _ToLogin()
         {
-            if (id != Id)
-                return;
-
-            _MoveingState.Value = obj;
+            var state = new UserLoginState(Binder);
+            state.DoneEvent += _ToPlay;
+            _Machine.Push(state);
         }
 
-        Property<int> IEntity.Id => new Property<int>(Id);
+        private void _ToPlay(string name)
+        {
+            UnityEngine.Debug.Log("play state");
+            var state = new UserPlayState(Binder, _Keeper);
+            state.DoneEvent += _ToLogin;
+            _Machine.Push(state);
+        }
 
-        Property<int> IPlayer.Id => new Property<int>(Id);
-
-        Property<MoveingState> IEntity.MoveingState => _MoveingState;
-
-        Property<Attributes> IEntity.Attributes => _Attributes;
+        public void Update()
+        {
+            _Machine.Update();
+        }
+        
 
         void IDisposable.Dispose()
         {
-            Scripts.Service.GetWorld().GetExistingSystem<Dots.Systems.MoveSystem>().StateEvent -= _UpdateMoveingState;
-            Scripts.Service.GetWorld().EntityManager.DestroyEntity(Entity);
+            _Machine.Termination();
+
+            
+            
             _Remover();
         }
 
-        public void SyncStates()
-        {
-            _SyncMovingStateInterval += UnityEngine.Time.deltaTime;
-            if (_SyncMovingStateInterval < 1f / 20f)
-                return;
-            _SyncMovingStateInterval = 0;
-            var mgr = Scripts.Service.GetWorld().EntityManager;
-
-          
-
-            {
-                
-                var component = mgr.GetComponentData<Dots.ActorAttributes>(Entity);
-                if (component.Data.Equals(_Attributes.Value))
-                    return;
-                _Attributes.Value = component.Data;
-            }
-
-        }
-        Value<bool> IPlayer.SetDirection(Unity.Mathematics.float3 dir)
-        {
-            var direction = new Dots.Direction() { Value = Unity.Mathematics.math.normalizesafe(new Unity.Mathematics.float3(dir.x,0,dir.z)) };
-            Value<bool> value = new Value<bool>();
-            UniRx.MainThreadDispatcher.Post((state) => {
-                var mgr = Scripts.Service.GetWorld().EntityManager;                
-                mgr.SetComponentData(Entity, direction); 
-                value.SetValue(true);
-            } , null);
-            
-            return value;
-        }
+      
     }
 }

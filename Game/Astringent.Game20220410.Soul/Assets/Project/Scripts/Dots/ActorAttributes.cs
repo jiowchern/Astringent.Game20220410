@@ -2,10 +2,6 @@
 
 namespace Astringent.Game20220410.Dots
 {
-    public struct EntityInView : IBufferElementData
-    {
-        public long Entity;
-    }
     public struct ActorAttributes : IComponentData
     {
         public Protocol.Attributes Data;
