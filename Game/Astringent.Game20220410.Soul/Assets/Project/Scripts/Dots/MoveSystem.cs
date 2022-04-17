@@ -18,7 +18,7 @@ namespace Astringent.Game20220410.Dots.Systems
         protected override void OnUpdate()
         {
             var nowTime = Service.GetWorld().Time.ElapsedTime;
-            Entities.ForEach((ref Translation translation, ref Dots.MoveingState move_state) =>
+            Entities.ForEach((ref Translation translation, in Dots.MoveingState move_state) =>
             {
                 var interval = (float)(nowTime - move_state.Data.StartTime);
                 translation.Value = move_state.Data.Position + move_state.Data.Vector * interval;
@@ -26,7 +26,7 @@ namespace Astringent.Game20220410.Dots.Systems
 
 
             
-            Entities.WithoutBurst().ForEach((ref Direction dir,ref Dots.ActorAttributes actor, ref Translation translation,ref Dots.MoveingState move_state) =>
+            Entities.WithoutBurst().ForEach((ref Dots.ActorAttributes actor, ref Dots.MoveingState move_state, in Direction dir, in Translation translation) =>
             {
                 
                 if (actor.Data.Direction.Equals(dir.Value))

@@ -17,7 +17,8 @@ namespace Astringent.Game20220410.Scripts
             dstManager.AddComponent<Dots.MoveingState>(entiry);
             dstManager.AddComponent<Dots.Direction>(entiry);
             dstManager.AddComponent<Dots.ActorAttributes>(entiry);
-            
+            dstManager.AddBuffer<Dots.EntityInView>(entity);
+
 
             ActorEntity = entiry;
         }

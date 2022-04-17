@@ -75,7 +75,7 @@ namespace Astringent.Game20220410
 
             _Disposable.Clear();
             var obs = from player in agent.QueryNotifier<IPlayer>().SupplyEvent()
-                      from actor in GameObject.FindObjectsOfType<Actor>()
+                      from actor in GameObject.FindObjectsOfType<Entity>()
                       where player.Id.Value == actor.Id
                       from _ in _Move(actor, player, info.point).RemoteValue()
                       select _;
@@ -83,7 +83,7 @@ namespace Astringent.Game20220410
             _Disposable.Add(obs.Subscribe(r=>UnityEngine.Debug.Log($"move done.")));
         }
 
-        private Regulus.Remote.Value<bool> _Move(Actor actor, IPlayer player, Vector3 point)
+        private Regulus.Remote.Value<bool> _Move(Entity actor, IPlayer player, Vector3 point)
         {
             var dir = actor.transform.TransformDirection(point);
             return player.SetDirection(dir); 

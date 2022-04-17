@@ -8,22 +8,22 @@ using Regulus.Remote.Ghost;
 
 namespace Astringent.Game20220410
 {
-    public class Actor : AgentReactiveMonoBehaviour
+    public class Entity : AgentReactiveMonoBehaviour
     {
 
         readonly UniRx.CompositeDisposable _Disposable;
 
         System.Action _MoveAction;
 
-        public long Id { get; private set; }
+        public int Id { get; private set; }
 
-        public Actor()
+        public Entity()
         {
             _MoveAction = () => { };
             _Disposable = new UniRx.CompositeDisposable();
         }
 
-        public void Startup(IActor actor)
+        public void Startup(IEntity actor)
         {
             Id = actor.Id.Value;
             _Release();
@@ -33,22 +33,22 @@ namespace Astringent.Game20220410
 
         }
 
-        private void _SetDestroy(IActor actor)
+        private void _SetDestroy(IEntity actor)
         {
             var obs = from agent in Observer
-                      from a in agent.QueryNotifier<IActor>().UnsupplyEvent()
+                      from a in agent.QueryNotifier<IEntity>().UnsupplyEvent()
                       where a == actor
                       select a;
 
             _Disposable.Add(obs.Subscribe(_Destroy));
         }
 
-        private void _Destroy(IActor actor)
+        private void _Destroy(IEntity actor)
         {
             GameObject.Destroy(gameObject);
         }
 
-        private void _SetMove(IActor actor)
+        private void _SetMove(IEntity actor)
         {
             var obs = from moveState in actor.MoveingState.ChangeObservable().Repeat()
                       select moveState;

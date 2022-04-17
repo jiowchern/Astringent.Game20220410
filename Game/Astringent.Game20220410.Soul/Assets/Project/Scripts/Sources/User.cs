@@ -8,26 +8,26 @@ using Unity.Entities;
 namespace Astringent.Game20220410.Sources
 {
 
-    public class User : System.IDisposable ,Astringent.Game20220410.Protocol.IActor , IPlayer
+    public class User : System.IDisposable ,Astringent.Game20220410.Protocol.IEntity, IPlayer
     {
         
         public readonly Entity Entity;
         public readonly IBinder Binder;
-        public readonly long Id;
+        public readonly int Id;
 
         Property<MoveingState> _MoveingState;
-        Property<ActorAttributes> _Attributes;
+        Property<Attributes> _Attributes;
         float _SyncMovingStateInterval;
         System.Action _Remover;
-        public User(long id,Entity entity, Regulus.Remote.IBinder binder)
+        public User(int id,Entity entity, Regulus.Remote.IBinder binder)
         {
             Id = id;
             Entity = entity;
             this.Binder = binder;
 
             _MoveingState = new Property<MoveingState>();
-            _Attributes = new Property<ActorAttributes>();
-            var actor = Binder.Bind<IActor>(this);
+            _Attributes = new Property<Attributes>();
+            var actor = Binder.Bind<IEntity>(this);
             var player = Binder.Bind<IPlayer>(this);
 
             _Remover = () => {
@@ -47,13 +47,13 @@ namespace Astringent.Game20220410.Sources
             _MoveingState.Value = obj;
         }
 
-        Property<long> IActor.Id => new Property<long>(Id);
+        Property<int> IEntity.Id => new Property<int>(Id);
 
-        Property<long> IPlayer.Id => new Property<long>(Id);
+        Property<int> IPlayer.Id => new Property<int>(Id);
 
-        Property<MoveingState> IActor.MoveingState => _MoveingState;
+        Property<MoveingState> IEntity.MoveingState => _MoveingState;
 
-        Property<ActorAttributes> IActor.Attributes => _Attributes;
+        Property<Attributes> IEntity.Attributes => _Attributes;
 
         void IDisposable.Dispose()
         {

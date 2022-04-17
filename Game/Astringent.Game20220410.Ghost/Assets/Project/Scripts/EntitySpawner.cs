@@ -8,16 +8,16 @@ using Cinemachine;
 
 namespace Astringent.Game20220410
 {
-    public class ActorSpawner : AgentReactiveMonoBehaviour 
+    public class EntitySpawner : AgentReactiveMonoBehaviour 
     {
         
         public GameObject ActorPrefab;
         public Cinemachine.CinemachineVirtualCameraBase FollowCamera;
 
-        private void _Spawn(IActor obj,bool is_player)
+        private void _Spawn(IEntity obj,bool is_player)
         {
             
-            var actor = GameObject.Instantiate(ActorPrefab).GetComponent<Actor>();
+            var actor = GameObject.Instantiate(ActorPrefab).GetComponent<Entity>();
             actor.Startup(obj);            
             if(is_player)
             {
@@ -30,7 +30,7 @@ namespace Astringent.Game20220410
 
         protected override IEnumerable<IDisposable> _Start(Regulus.Remote.Ghost.IAgent agent)
         {
-            var addActorObs = from actor in agent.QueryNotifier<IActor>().SupplyEvent()
+            var addActorObs = from actor in agent.QueryNotifier<IEntity>().SupplyEvent()
                               from player in agent.QueryNotifier<IPlayer>().SupplyEvent()
                               let isPlayer = player.Id.Value == actor.Id.Value
                               select new { actor , isPlayer };

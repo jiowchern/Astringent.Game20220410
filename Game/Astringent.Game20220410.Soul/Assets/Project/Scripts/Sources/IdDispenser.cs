@@ -8,27 +8,27 @@ namespace Astringent.Game20220410.Sources
     public class IdDispenser
     {
         
-        long _IdProvider;
+        int _IdProvider;
         
         class Renter
         {
             public WeakReference Target;
-            public long Id;
+            public int Id;
         }
 
-        readonly System.Collections.Generic.Queue<long> _Reserves;
+        readonly System.Collections.Generic.Queue<int> _Reserves;
         readonly System.Collections.Generic.List<Renter> _Renters;
         public IdDispenser()
         {
-            _Reserves = new System.Collections.Generic.Queue<long>();
+            _Reserves = new System.Collections.Generic.Queue<int>();
             _Renters = new System.Collections.Generic.List<Renter>();
         }
 
-        public long Dispatch<T>(T applicant) where T : class
+        public int Dispatch<T>(T applicant) where T : class
         {
             
             _Recycling();
-            long id;
+            int id;
             if(_TryGetReserves(out id))
             {                
                 return _GiveOut(applicant , id);
@@ -37,13 +37,13 @@ namespace Astringent.Game20220410.Sources
             return _GiveOut(applicant, ++_IdProvider);
         }
 
-        private long _GiveOut<T>(T applicant, long id) where T : class
+        private int _GiveOut<T>(T applicant, int id) where T : class
         {
             _Renters.Add(new Renter() { Target = new WeakReference(applicant), Id = id });
             return id;
         }
 
-        private bool _TryGetReserves(out long id)
+        private bool _TryGetReserves(out int id)
         {
             id = 0;
             if(_Reserves.Any() == false)

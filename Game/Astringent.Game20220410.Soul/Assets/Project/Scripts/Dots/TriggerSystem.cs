@@ -11,9 +11,9 @@ namespace Astringent.Game20220410.Dots.Systems
         [Unity.Burst.BurstCompile]
         public struct TriggrtJob : Unity.Physics.ITriggerEventsJob
         {
-            public void Execute(TriggerEvent triggerEvent)
+            void ITriggerEventsJobBase.Execute(TriggerEvent triggerEvent)
             {
-
+                
                 UnityEngine.Debug.Log($"trigger {triggerEvent.EntityA} : {triggerEvent.EntityB}");
             }
         }
@@ -32,7 +32,7 @@ namespace Astringent.Game20220410.Dots.Systems
             
             var job = new TriggrtJob();
             job.Schedule(_StepPhysicsWorld.Simulation ,this.Dependency).Complete();
-
+          
          //   job.Execute  (new TriggerEvent());
 
         }

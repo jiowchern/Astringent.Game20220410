@@ -2,20 +2,15 @@
 
 namespace Astringent.Game20220410.Dots
 {
-    public struct MoveingState : IComponentData
+    public struct EntityInView : IBufferElementData
     {
-        public Protocol.MoveingState Data;
-
-        public static implicit operator MoveingState(Protocol.MoveingState data)
-        {
-            return new MoveingState() { Data = data };
-        }
+        public long Entity;
     }
     public struct ActorAttributes : IComponentData
     {
-        public Protocol.ActorAttributes Data;
+        public Protocol.Attributes Data;
 
-        public static implicit operator ActorAttributes(Protocol.ActorAttributes data)
+        public static implicit operator ActorAttributes(Protocol.Attributes data)
         {
             return new ActorAttributes() { Data = data };
         }

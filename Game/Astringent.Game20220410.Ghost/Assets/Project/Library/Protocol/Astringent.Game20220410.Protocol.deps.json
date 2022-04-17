@@ -10,7 +10,7 @@
       "Astringent.Game20220410.Protocol/1.0.0": {
         "dependencies": {
           "NETStandard.Library": "2.0.3",
-          "Regulus.Remote": "0.1.11.10-alpha",
+          "Regulus.Remote": "0.1.11.11",
           "Regulus.Remote.Tools.Protocol.Sources": "0.0.0.13-alpha",
           "Regulus.Serialization": "0.1.11.10-alpha",
           "Unity3D": "1.7.0"
@@ -147,7 +147,7 @@
           }
         }
       },
-      "Regulus.Remote/0.1.11.10-alpha": {
+      "Regulus.Remote/0.1.11.11": {
         "dependencies": {
           "Regulus.Network": "0.1.11.10-alpha",
           "Regulus.Serialization": "0.1.11.10-alpha",
@@ -155,8 +155,8 @@
         },
         "runtime": {
           "lib/netstandard2.0/Regulus.Remote.dll": {
-            "assemblyVersion": "0.1.11.10",
-            "fileVersion": "0.1.11.10"
+            "assemblyVersion": "0.1.11.11",
+            "fileVersion": "0.1.11.11"
           }
         }
       },
@@ -322,12 +322,12 @@
       "path": "regulus.network/0.1.11.10-alpha",
       "hashPath": "regulus.network.0.1.11.10-alpha.nupkg.sha512"
     },
-    "Regulus.Remote/0.1.11.10-alpha": {
+    "Regulus.Remote/0.1.11.11": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-dWiP5MPMR0r1+GfCGi3tzHXk+92FzPPx3p1eR5mDBHW86rxMcgNjiRvQmJ07zH3ZezyIM2W6fEfm6LpEK4KeAg==",
-      "path": "regulus.remote/0.1.11.10-alpha",
-      "hashPath": "regulus.remote.0.1.11.10-alpha.nupkg.sha512"
+      "sha512": "sha512-3vC3DtvU6ewtIdOtXr3FMWvnboLTsXLvPqWPD4spIWi15MT1g87Bz3bMPJH6rR+TxJNYdbJdPWxZAeaul/VJ+w==",
+      "path": "regulus.remote/0.1.11.11",
+      "hashPath": "regulus.remote.0.1.11.11.nupkg.sha512"
     },
     "Regulus.Remote.Tools.Protocol.Sources/0.0.0.13-alpha": {
       "type": "package",

@@ -10,6 +10,7 @@ using Unity.Mathematics;
 
 namespace Astringent.Game20220410.Scripts
 {
+    
     public class UsersManager : MonoBehaviour 
     {
         
@@ -43,7 +44,7 @@ namespace Astringent.Game20220410.Scripts
         {
             var entityManager = Service.GetWorld().EntityManager;
             var entity = entityManager.Instantiate(SoulPrototypesProvider.ActorEntity);
-            entityManager.SetComponentData<Dots.ActorAttributes>(entity, new Protocol.ActorAttributes {  Id = id, Speed = 1f } );
+            entityManager.SetComponentData<Dots.ActorAttributes>(entity, new Protocol.Attributes {  Id = id, Speed = 1f } );
             return entity;
 
 
