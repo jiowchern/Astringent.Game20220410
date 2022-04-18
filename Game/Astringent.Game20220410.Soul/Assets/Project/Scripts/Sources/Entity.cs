@@ -54,11 +54,14 @@ namespace Astringent.Game20220410.Sources
                              where mgr.GetName(g.Value) == "ActorAvatar"
                              select g.Value).Single();
 
-            mgr.AddComponent<Dots.ParentEntiry>(_VisionEntity);
-            mgr.SetComponentData(_VisionEntity, new Dots.ParentEntiry { Entity = _Entity });
+            mgr.AddComponent<Unity.Transforms.Parent>(_VisionEntity);
+            mgr.AddComponent<Unity.Transforms.LocalToParent>(_VisionEntity);
+            mgr.SetComponentData(_VisionEntity, new Unity.Transforms.Parent { Value = _Entity });
 
-            mgr.AddComponent<Dots.ParentEntiry>(_AvatarEntity);
-            mgr.SetComponentData(_AvatarEntity, new Dots.ParentEntiry { Entity = _Entity });
+
+            mgr.AddComponent<Unity.Transforms.Parent>(_AvatarEntity);
+            mgr.AddComponent<Unity.Transforms.LocalToParent>(_AvatarEntity);
+            mgr.SetComponentData(_AvatarEntity, new Unity.Transforms.Parent { Value = _Entity });           
 
 
 
@@ -123,8 +126,8 @@ namespace Astringent.Game20220410.Sources
             if (element.State == Dots.PhysicsEventState.Stay)
                 return;
 
-            var parent = mgr.GetComponentData<Dots.ParentEntiry>(element.Entity);
-            var attr = mgr.GetComponentData<Dots.ActorAttributes>(parent.Entity);
+            var parent = mgr.GetComponentData<Unity.Transforms.Parent>(element.Entity);
+            var attr = mgr.GetComponentData<Dots.ActorAttributes>(parent.Value);
             
             if(element.State == Dots.PhysicsEventState.Enter)
             {

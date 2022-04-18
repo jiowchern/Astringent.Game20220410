@@ -2,10 +2,6 @@
 
 namespace Astringent.Game20220410.Dots
 {
-    public struct ParentEntiry : IComponentData
-    {
-        public Entity Entity;
-    }
     public struct MoveingState : IComponentData
     {
         public Protocol.MoveingState Data;

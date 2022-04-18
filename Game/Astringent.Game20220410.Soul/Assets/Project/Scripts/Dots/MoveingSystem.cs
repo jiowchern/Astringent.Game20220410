@@ -36,22 +36,13 @@ namespace Astringent.Game20220410.Dots.Systems
                 var interval = (float)(nowTime - move_state.Data.StartTime);
                 translation.Value = move_state.Data.Position + move_state.Data.Vector * interval;
             }).ScheduleParallel();
-
-
-
             
-            Entities.WithChangeFilter<Direction>().ForEach((ref Dots.MoveingState move_state, in Direction dir, in Dots.ActorAttributes attributes, in Translation translation) => {
-                
-                
-
+            Entities.WithChangeFilter<Direction>().ForEach((ref Dots.MoveingState move_state, in Direction dir, in Dots.ActorAttributes attributes, in Translation translation) => 
+            {
                 move_state.Data.StartTime = nowTime;
                 move_state.Data.Position = translation.Value;
                 move_state.Data.Vector = dir.Value * attributes.Data.Speed;
-                
-                
             }).ScheduleParallel();
-
-            
 
         }
     }
