@@ -130,7 +130,15 @@ namespace Astringent.Game20220410
             _Socket.OnError -= _Error;
             _Socket.OnMessage -= _Message;
             _Socket.OnClose -= _Close;
-            
+            byte data;
+            while (_Reads.TryDequeue(out data))
+            {
+
+            }
+            while (_Writes.TryDequeue(out data))
+            {
+
+            }
         }
     }
 }

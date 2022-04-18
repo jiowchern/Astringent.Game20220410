@@ -40,11 +40,9 @@ namespace Astringent.Game20220410.Dots.Systems
 
 
             
-            Entities.ForEach((ref Past past, ref Dots.MoveingState move_state, in Direction dir, in Dots.ActorAttributes attributes, in Translation translation) => {
+            Entities.WithChangeFilter<Direction>().ForEach((ref Dots.MoveingState move_state, in Direction dir, in Dots.ActorAttributes attributes, in Translation translation) => {
                 
-                if (UnsafeEuqaler.Equal(past.Direction, dir))
-                    return;
-                past.Direction = dir;
+                
 
                 move_state.Data.StartTime = nowTime;
                 move_state.Data.Position = translation.Value;

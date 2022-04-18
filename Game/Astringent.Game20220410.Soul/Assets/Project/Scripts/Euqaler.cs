@@ -1,6 +1,6 @@
 ﻿namespace Astringent.Game20220410.Scripts
 {
-    static class UnsafeEuqaler
+   /* static class UnsafeEuqaler
     {
         public unsafe static bool Equal<T>(in T t1, in T t2) where T : unmanaged
         {
@@ -25,7 +25,7 @@
             }
             return true;
         }
-    }
+    }*/
 
 }
 

@@ -14,17 +14,17 @@ namespace Astringent.Game20220410
         public GameObject ActorPrefab;
         public Cinemachine.CinemachineVirtualCameraBase FollowCamera;
 
-        readonly System.Collections.Generic.Dictionary<int, Entity> _Entites;
+        readonly System.Collections.Generic.Dictionary<IEntity, Entity> _Entites;
         readonly UniRx.CompositeDisposable _CompositeDisposable;
         public EntitySpawner()
         {
-            _Entites = new Dictionary<int, Entity>();
+            _Entites = new Dictionary<IEntity, Entity>();
             _CompositeDisposable = new CompositeDisposable();
         }
         new protected void Start()
         {
 
-            _Reset();
+          //  _Reset();
 
 
 
@@ -36,7 +36,7 @@ namespace Astringent.Game20220410
         {
             
             var actor = GameObject.Instantiate(ActorPrefab).GetComponent<Entity>();
-            _Entites.Add(obj.Id.Value, actor);
+            _Entites.Add(obj, actor);
             actor.Startup(obj);            
             if(is_player)
             {
@@ -49,30 +49,38 @@ namespace Astringent.Game20220410
 
         protected override IEnumerable<IDisposable> _Start(Regulus.Remote.Ghost.IAgent agent)
         {
+            _Entites.Clear();
+            var addActorObs = 
+                              from player in agent.QueryNotifier<IPlayer>().SupplyEvent().First()
+                              from actor in agent.QueryNotifier<IEntity>().SupplyEvent()
+                              let isPlayer = _Check(player, actor)
+                              select new { actor, isPlayer };
+            yield return addActorObs.Subscribe((ret) => { _Spawn(ret.actor, ret.isPlayer); });
 
             var releaseObs = from entity in agent.QueryNotifier<IEntity>().UnsupplyEvent()
                             select entity;
             yield return releaseObs.Subscribe(_Remove);
 
-            var removeObs = from player in agent.QueryNotifier<IPlayer>().UnsupplyEvent()
+            /*var removeObs = from player in agent.QueryNotifier<IPlayer>().UnsupplyEvent()
                             select player;
 
-            yield return removeObs.Subscribe(_Reset);
+            yield return removeObs.Subscribe(_Reset);*/
 
         }
 
         private void _Remove(IEntity obj)
         {
-            var ent = _Entites[obj.Id];
-            _Entites.Remove(obj.Id);
+            
+            var ent = _Entites[obj];
+            _Entites.Remove(obj);
             GameObject.Destroy(ent.gameObject);            
         }
 
         private void _Reset()
         {
             _CompositeDisposable.Clear();
-            var addActorObs = from agent in Observer
-                              from player in agent.QueryNotifier<IPlayer>().SupplyEvent()
+            var addActorObs = from agent in Observer.First()
+                              from player in agent.QueryNotifier<IPlayer>().SupplyEvent().First()
                               from actor in agent.QueryNotifier<IEntity>().SupplyEvent()
                               let isPlayer = _Check(player, actor)
                               select new { actor, isPlayer };

@@ -33,26 +33,17 @@ namespace Astringent.Game20220410.Dots.Systems
         }
         protected override void OnUpdate()
         {
+            
             MoveingState.Update((writter) => {
-                Entities.ForEach((ref Past past, in Dots.MoveingState move_state, in Dots.ActorAttributes attributes) =>
+                Entities.WithChangeFilter<Dots.MoveingState>().ForEach((in Dots.MoveingState move_state, in Dots.ActorAttributes attributes) =>
                 {
-
-                    
-                    if (Scripts.UnsafeEuqaler.Equal(in past.MoveingState, in move_state.Data))
-                        return;
-
                     writter.Enqueue(new EventsSystemHandler<Protocol.MoveingState>.Data() { State = move_state.Data, Id = attributes.Data.Id }); ;
                 }).Schedule(Dependency).Complete();
             });            
 
             Attributes.Update(writter => {
-                Entities.ForEach((ref Past past, in Dots.ActorAttributes attributes) =>
+                Entities.WithChangeFilter<Dots.ActorAttributes>().ForEach((in Dots.ActorAttributes attributes) =>
                 {
-                    
-                    if (Scripts.UnsafeEuqaler.Equal(in past.Attributes, in attributes.Data))
-                        return;
-
-
                     writter.Enqueue(new EventsSystemHandler<Protocol.Attributes>.Data() { State = attributes.Data, Id = attributes.Data.Id }); ;
                 }).Schedule(Dependency).Complete();
             });

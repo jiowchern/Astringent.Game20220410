@@ -99,10 +99,10 @@ namespace Astringent.Game20220410
 
         public void Disconnect()
         {
-            
-            Connecter.Disconnect();
             _DestroyAction();
             _DestroyAction = _UpdateEmpty;
+            Connecter.Disconnect();
+            
         }
 
     }
