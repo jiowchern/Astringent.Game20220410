@@ -12,14 +12,18 @@ namespace Astringent.Game20220410.Dots.Systems
         
         public EventsSystemHandler<Protocol.Attributes> Attributes;
         public EventsSystemHandler<Protocol.MoveingState> MoveingState;
-       
+        public EventsSystemHandler<TriggerEventBufferElement> TriggerEventBufferElement;
+
 
 
         protected override void OnCreate()
         {
+            TriggerEventBufferElement = new EventsSystemHandler<TriggerEventBufferElement>();
             Attributes = new EventsSystemHandler<Protocol.Attributes>();
             MoveingState = new EventsSystemHandler<Protocol.MoveingState>();
             
+
+
             base.OnCreate();
         }
 
@@ -27,24 +31,38 @@ namespace Astringent.Game20220410.Dots.Systems
 
         protected override void OnDestroy()
         {
+          
             Attributes.Dispose();
             MoveingState.Dispose();
+            TriggerEventBufferElement.Dispose();
             base.OnDestroy();
         }
         protected override void OnUpdate()
         {
             
             MoveingState.Update((writter) => {
-                Entities.WithChangeFilter<Dots.MoveingState>().ForEach((in Dots.MoveingState move_state, in Dots.ActorAttributes attributes) =>
+                Entities.WithChangeFilter<Dots.MoveingState>().ForEach((in Entity owner,in Dots.MoveingState move_state) =>
                 {
-                    writter.Enqueue(new EventsSystemHandler<Protocol.MoveingState>.Data() { State = move_state.Data, Id = attributes.Data.Id }); ;
+                    writter.Enqueue(new EventsSystemHandler<Protocol.MoveingState>.Data() { State = move_state.Data, Owner = owner }); ;
                 }).Schedule(Dependency).Complete();
             });            
 
             Attributes.Update(writter => {
-                Entities.WithChangeFilter<Dots.ActorAttributes>().ForEach((in Dots.ActorAttributes attributes) =>
+                Entities.WithChangeFilter<Dots.ActorAttributes>().ForEach((in Entity owner, in Dots.ActorAttributes attributes) =>
                 {
-                    writter.Enqueue(new EventsSystemHandler<Protocol.Attributes>.Data() { State = attributes.Data, Id = attributes.Data.Id }); ;
+                    writter.Enqueue(new EventsSystemHandler<Protocol.Attributes>.Data() { State = attributes.Data,  Owner = owner }); 
+                }).Schedule(Dependency).Complete();
+            });
+
+            TriggerEventBufferElement.Update(writter =>
+            {
+                Entities.WithChangeFilter<TriggerEventBufferElement>().ForEach((in Entity owner, in DynamicBuffer<TriggerEventBufferElement> elements) =>
+                {
+                    foreach (var element in elements)
+                    {
+                        writter.Enqueue(new EventsSystemHandler<TriggerEventBufferElement>.Data() { State = element, Owner = owner }); ;
+                    }
+                    
                 }).Schedule(Dependency).Complete();
             });
         }

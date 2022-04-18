@@ -4,8 +4,20 @@ using UniRx;
 
 namespace Astringent.Game20220410
 {
+    public static class DynamicBufferExpansions
+    {
+        public static System.Collections.Generic.IEnumerable<T> ToEnumerable<T>(this Unity.Entities.DynamicBuffer<T> buffer) where T : unmanaged
+        {
+            var length = buffer.Length;
+            for (int i = 0; i < length; i++)
+            {
+                yield return buffer[i];
+            }
+        }
+    }
     public static class INotifierExpansions
     {
+        //DynamicBuffer<T>
 
         public static IObservable<TValue> RemoteValue<TValue>(this Regulus.Remote.Value<TValue> ret)
         {

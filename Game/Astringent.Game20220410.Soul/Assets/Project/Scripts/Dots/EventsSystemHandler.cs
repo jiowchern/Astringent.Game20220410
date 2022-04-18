@@ -1,4 +1,5 @@
 ﻿using System;
+using Unity.Entities;
 
 namespace Astringent.Game20220410.Dots.Systems
 {
@@ -6,10 +7,10 @@ namespace Astringent.Game20220410.Dots.Systems
     {
         public struct Data
         {
-            public int Id;
+            public Entity Owner;
             public T State;
         }
-        public event System.Action<int, T> StateEvent;
+        public event System.Action<Entity, T> StateEvent;
 
         readonly Unity.Collections.NativeQueue<Data> _Queue;
         public EventsSystemHandler()
@@ -18,7 +19,8 @@ namespace Astringent.Game20220410.Dots.Systems
             _Queue  =new Unity.Collections.NativeQueue<Data>(Unity.Collections.Allocator.Persistent);
         }
 
-        private void _Empty(int arg1, T arg2)
+        private void _Empty(Entity
+            arg1, T arg2)
         {
             
         }
@@ -33,7 +35,7 @@ namespace Astringent.Game20220410.Dots.Systems
 
             while (_Queue.TryDequeue(out var data))
             {
-                StateEvent.Invoke(data.Id, data.State);
+                StateEvent.Invoke(data.Owner, data.State);
             }
         }
 

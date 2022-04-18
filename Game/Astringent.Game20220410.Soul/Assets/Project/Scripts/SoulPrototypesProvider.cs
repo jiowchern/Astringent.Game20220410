@@ -16,11 +16,17 @@ namespace Astringent.Game20220410.Scripts
         {
 
             var entiry = conversionSystem.GetPrimaryEntity(ActorPrefab);
+            
             dstManager.AddComponent<Dots.MoveingState>(entiry);
             dstManager.AddComponent<Dots.Direction>(entiry);
             dstManager.AddComponent<Dots.ActorAttributes>(entiry);
 
-            dstManager.AddBuffer<Dots.EntityInView>(entity);
+           /* var buffer = dstManager.GetBuffer<LinkedEntityGroup>(entiry);
+            foreach (var e in buffer.ToEnumerable())
+            {
+                dstManager.AddComponent<Dots.ParentEntiry>(e.Value);
+                dstManager.SetComponentData(e.Value, new Dots.ParentEntiry { Entity = entiry });
+            }*/
 
             ActorEntity = entiry;
         } 
