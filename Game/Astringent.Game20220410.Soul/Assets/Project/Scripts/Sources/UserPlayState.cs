@@ -52,5 +52,11 @@ namespace Astringent.Game20220410.Sources
         {
          
         }
+
+        Value<bool> IPlayer.Quit()
+        {
+            DoneEvent();
+            return true;
+        }
     }
 }

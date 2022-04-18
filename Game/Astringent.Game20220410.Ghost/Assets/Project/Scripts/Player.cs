@@ -51,6 +51,18 @@ namespace Astringent.Game20220410
             _Disposable.Add(obs.First().Subscribe(_MoveDone));
         }
 
+        public void Quit()
+        {
+            _Disposable.Clear();
+            var obs =
+                from agent in Observer
+                from player in agent.QueryNotifier<IPlayer>().SupplyEvent()
+                from _ in player.Quit().RemoteValue()
+                select _;
+
+            _Disposable.Add(obs.First().Subscribe(_=>UnityEngine.Debug.Log("player quit")));
+        }
+
         private void _MoveDone(bool obj)
         {
             UnityEngine.Debug.Log("move done");
