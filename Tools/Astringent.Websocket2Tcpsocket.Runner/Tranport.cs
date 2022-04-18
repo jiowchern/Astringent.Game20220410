@@ -30,7 +30,7 @@ namespace Astringent.Websocket2Tcpsocket.Runner
                     return;
                 }
 
-                peer.ErrorEvent += async (e) => {
+                peer.ErrorEvent += (e) => {
 
                     System.Console.WriteLine($"web error {e}.");
                     Enable = false;
@@ -54,7 +54,9 @@ namespace Astringent.Websocket2Tcpsocket.Runner
                     byte[] receive = new byte[16384];
                     while (Enable)
                     {
+                        
                         var receiveCount = await webStream.Receive(receive, 0, receive.Length);
+                        
                         if (!Enable)
                             break;
                         int sendCount = 0;
@@ -81,6 +83,7 @@ namespace Astringent.Websocket2Tcpsocket.Runner
                     byte[] receive = new byte[16384];
                     while (Enable)
                     {
+                        
                         //System.Console.WriteLine($"done t->w 1");
                         var receiveCount = await tcpStream.Receive(receive, 0, receive.Length);
                         //System.Console.WriteLine($"done t->w 2");

@@ -17,6 +17,7 @@ namespace Astringent.Game20220410
         private static IEnumerator _RunWait<T>(IObserver<T> observer , Regulus.Remote.Property<T> instance)
         {
             observer.OnNext(instance.Value);
+
             
             var val = instance.Value;
             while(val.Equals(instance.Value))

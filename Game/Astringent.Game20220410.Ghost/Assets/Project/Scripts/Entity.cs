@@ -48,6 +48,9 @@ namespace Astringent.Game20220410
         {
             
             this.gameObject.transform.position = state.Position;
+            
+            this.gameObject.transform.Translate(state.Vector * (float)(Player.WorldTime - state.StartTime));
+
             _MoveAction = () => {
                 this.gameObject.transform.Translate(state.Vector * UnityEngine.Time.deltaTime);
             };

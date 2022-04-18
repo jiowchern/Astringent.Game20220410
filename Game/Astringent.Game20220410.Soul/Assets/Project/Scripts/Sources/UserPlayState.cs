@@ -18,7 +18,8 @@ namespace Astringent.Game20220410.Sources
 
         public event Action DoneEvent;
 
-        System.Collections.Generic.List<int> _VisionEntites;
+        readonly System.Collections.Generic.List<int> _VisionEntites;
+        readonly Property<double> _WorldTime;
         public UserPlayState(IBinder binder, EntitesKeeper keeper)
         {
             _VisionEntites = new System.Collections.Generic.List<int>();
@@ -27,30 +28,18 @@ namespace Astringent.Game20220410.Sources
 
             this._Keeper = keeper;
             _Entity = new Entity();
-           
+
+            _WorldTime = new Property<double>(Scripts.Service.GetWorld().Time.ElapsedTime);
+
+
         }
 
-        private void _UnbindEntity(int obj)
-        {
-            UnityEngine.Debug.Log($"entity exit {obj}");
-            Entity target;
-            if (!_Keeper.Entites.TryGetValue(obj, out target))
-                return;
-
-            _EntityBinder.Remove<IEntity>(target);
-        }
-
-        private void _BindEntity(int obj)
-        {
-            UnityEngine.Debug.Log($"entity enter {obj}");
-            Entity target;
-            if (!_Keeper.Entites.TryGetValue(obj, out target))
-                return;
-
-            _EntityBinder.Add<IEntity>(target);
-        }
+     
 
         Property<int> IPlayer.Id => new Property<int>(_Entity.Id);
+
+        double _DeltaTime = 0;
+        Property<double> IPlayer.WorldTime => _WorldTime;
 
         void IStatus.Enter()
         {
@@ -101,6 +90,13 @@ namespace Astringent.Game20220410.Sources
             }
             _VisionEntites.Clear();
             _VisionEntites.AddRange(entites) ;
+
+            _DeltaTime += Scripts.Service.GetWorld().Time.DeltaTime;
+            if(_DeltaTime > 5)
+            {
+                _DeltaTime = 0;
+                _WorldTime.Value = Scripts.Service.GetWorld().Time.ElapsedTime;
+            }
         }
 
         Value<bool> IPlayer.Quit()

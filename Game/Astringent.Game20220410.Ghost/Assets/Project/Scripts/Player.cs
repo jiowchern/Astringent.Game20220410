@@ -18,10 +18,11 @@ namespace Astringent.Game20220410
         {
             _Disposable = new UniRx.CompositeDisposable();
         }
-        // Start is called before the first frame update
+        public static double WorldTime;
         
 
-         new private void OnDestroy()
+
+        new private void OnDestroy()
         {
             _Disposable.Clear();
             base.OnDestroy();
@@ -70,9 +71,21 @@ namespace Astringent.Game20220410
 
         protected override IEnumerable<IDisposable> _Start(IAgent agent)
         {
-            yield return Observable.EveryUpdate().Where(_ => Input.GetMouseButtonDown(0)).Subscribe(_=>_Move(agent));
+            yield return Observable.EveryUpdate().Where(_ => Input.GetMouseButtonDown(0)).Subscribe(_ => _Move(agent));
 
-           
+            yield return Observable.EveryUpdate().Subscribe(_ => WorldTime += UnityEngine.Time.deltaTime);
+
+            var obs = from player in agent.QueryNotifier<IPlayer>().SupplyEvent()
+                      from time in player.WorldTime.ChangeObservable().Repeat()
+                      select time;
+            yield return obs.Subscribe(_SetWorldTime);
+        }
+
+        private void _SetWorldTime(double time)
+        {
+            UnityEngine.Debug.Log($"update time {time}");
+            WorldTime = time;
+            
         }
 
         private void _Move(IAgent agent)
