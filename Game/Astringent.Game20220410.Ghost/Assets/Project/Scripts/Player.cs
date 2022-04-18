@@ -83,7 +83,7 @@ namespace Astringent.Game20220410
 
         private void _SetWorldTime(double time)
         {
-            UnityEngine.Debug.Log($"update time {time}");
+           
             WorldTime = time;
             
         }
@@ -110,7 +110,7 @@ namespace Astringent.Game20220410
 
         private Regulus.Remote.Value<bool> _Move(Entity actor, IPlayer player, Vector3 point)
         {
-            var dir = actor.transform.TransformDirection(point);
+            var dir = point - actor.transform.position;
             return player.SetDirection(dir); 
         }
     }
