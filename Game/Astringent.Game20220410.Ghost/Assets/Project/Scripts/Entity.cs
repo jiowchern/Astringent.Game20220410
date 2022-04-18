@@ -16,7 +16,7 @@ namespace Astringent.Game20220410
         System.Action _MoveAction;
 
         public int Id { get; private set; }
-
+        public int Iddd;
         public Entity()
         {
             _MoveAction = () => { };
@@ -26,27 +26,15 @@ namespace Astringent.Game20220410
         public void Startup(IEntity actor)
         {
             Id = actor.Id.Value;
+            Iddd = Id;
             _Release();
 
-            _SetDestroy(actor);
+            
             _SetMove(actor);
 
         }
 
-        private void _SetDestroy(IEntity actor)
-        {
-            var obs = from agent in Observer
-                      from a in agent.QueryNotifier<IEntity>().UnsupplyEvent()
-                      where a == actor
-                      select a;
-
-            _Disposable.Add(obs.Subscribe(_Destroy));
-        }
-
-        private void _Destroy(IEntity actor)
-        {
-            GameObject.Destroy(gameObject);
-        }
+   
 
         private void _SetMove(IEntity actor)
         {
@@ -58,7 +46,7 @@ namespace Astringent.Game20220410
 
         private void _Move(MoveingState state)
         {
-            UnityEngine.Debug.Log($"get actor move {state.Position}");
+            
             this.gameObject.transform.position = state.Position;
             _MoveAction = () => {
                 this.gameObject.transform.Translate(state.Vector * UnityEngine.Time.deltaTime);

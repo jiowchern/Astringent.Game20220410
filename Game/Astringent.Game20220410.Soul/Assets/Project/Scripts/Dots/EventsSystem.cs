@@ -37,7 +37,7 @@ namespace Astringent.Game20220410.Dots.Systems
                 Entities.ForEach((ref Past past, in Dots.MoveingState move_state, in Dots.ActorAttributes attributes) =>
                 {
 
-                    UnityEngine.Debug.Log("in attr MoveingState");
+                    
                     if (Scripts.UnsafeEuqaler.Equal(in past.MoveingState, in move_state.Data))
                         return;
 
@@ -48,7 +48,7 @@ namespace Astringent.Game20220410.Dots.Systems
             Attributes.Update(writter => {
                 Entities.ForEach((ref Past past, in Dots.ActorAttributes attributes) =>
                 {
-                    UnityEngine.Debug.Log("in attr check");
+                    
                     if (Scripts.UnsafeEuqaler.Equal(in past.Attributes, in attributes.Data))
                         return;
 

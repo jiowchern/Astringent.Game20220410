@@ -27,12 +27,13 @@ namespace Astringent.Game20220410.Sources
 
         void IStatus.Enter()
         {
+            _Binder.Bind<IEntity>(_Entity);
             _Binder.Bind<IPlayer>(this);
             
-            _Binder.Bind<IEntity>(_Entity);
+            
 
             _Keeper.Entites.TryAdd(_Entity.Id, _Entity);
-            
+            UnityEngine.Debug.Log("enter play state");
         }
 
         void IStatus.Leave()
@@ -41,6 +42,8 @@ namespace Astringent.Game20220410.Sources
             Entity entity;
             _Keeper.Entites.TryRemove(_Entity.Id, out entity);
             entity.Dispose();
+
+            UnityEngine.Debug.Log("leave play state");
         }
 
         Value<bool> IPlayer.SetDirection(Unity.Mathematics.float3 dir)

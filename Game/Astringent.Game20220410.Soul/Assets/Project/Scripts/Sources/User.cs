@@ -47,7 +47,7 @@ namespace Astringent.Game20220410.Sources
 
         private void _ToPlay(string name)
         {
-            UnityEngine.Debug.Log("play state");
+            
             var state = new UserPlayState(Binder, _Keeper);
             state.DoneEvent += _ToLogin;
             _Machine.Push(state);

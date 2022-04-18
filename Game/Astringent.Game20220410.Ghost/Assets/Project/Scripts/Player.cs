@@ -44,11 +44,11 @@ namespace Astringent.Game20220410
             _Disposable.Clear();
             var obs =
                 from agent in Observer
-                from player in agent.QueryNotifier<IPlayer>().SupplyEvent()
+                from player in agent.QueryNotifier<IPlayer>().SupplyEvent().First()
                 from _ in player.SetDirection(new Unity.Mathematics.float3(1, 0, 0)).RemoteValue()
                 select _;
 
-            _Disposable.Add(obs.First().Subscribe(_MoveDone));
+            _Disposable.Add(obs.Subscribe(_MoveDone));
         }
 
         public void Quit()
@@ -86,7 +86,7 @@ namespace Astringent.Game20220410
                 return;
 
             _Disposable.Clear();
-            var obs = from player in agent.QueryNotifier<IPlayer>().SupplyEvent()
+            var obs = from player in agent.QueryNotifier<IPlayer>().SupplyEvent().First()
                       from actor in GameObject.FindObjectsOfType<Entity>()
                       where player.Id.Value == actor.Id
                       from _ in _Move(actor, player, info.point).RemoteValue()
