@@ -65,7 +65,7 @@ namespace Astringent.Game20220410.Sources
 
         void IStatus.Leave()
         {
-       
+            _EntityBinder.Release();
             _Binder.Unbinds();
             Entity entity;
             _Keeper.Entites.TryRemove(_Entity.Id, out entity);

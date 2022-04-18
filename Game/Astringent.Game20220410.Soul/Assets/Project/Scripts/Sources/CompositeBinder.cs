@@ -1,4 +1,5 @@
 ﻿using Regulus.Remote;
+using System;
 
 namespace Astringent.Game20220410.Sources
 {
@@ -44,6 +45,15 @@ namespace Astringent.Game20220410.Sources
                 _Binder.Unbind(remove.Token);
                 return;
             }
+        }
+
+        internal void Release()
+        {
+            foreach (var item in _Pairs)
+            {
+                _Binder.Unbind(item.Token);
+            }
+            _Pairs.Clear();
         }
     }
     class CompositeBinder
