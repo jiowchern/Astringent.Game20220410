@@ -30,7 +30,7 @@ namespace Astringent.Game20220410.Dots.Systems
         
         protected override void OnUpdate()
         {
-            var nowTime = Service.GetWorld().Time.ElapsedTime;
+            var nowTime = Dots.Systems.Service.GetWorld().Time.ElapsedTime;
             Entities.ForEach((ref Translation translation, in Dots.MoveingState move_state) =>
             {
                 var interval = (float)(nowTime - move_state.Data.StartTime);

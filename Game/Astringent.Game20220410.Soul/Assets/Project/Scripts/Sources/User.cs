@@ -10,11 +10,10 @@ namespace Astringent.Game20220410.Sources
     public class User : System.IDisposable 
     {
         
-        public readonly EntitesKeeper _Keeper;
+        readonly EntitesKeeper _Keeper;
         public readonly IBinder Binder;
-        
 
-        
+
         System.Action _Remover;
 
         readonly Regulus.Utility.StatusMachine _Machine;
@@ -59,7 +58,7 @@ namespace Astringent.Game20220410.Sources
         }
         
 
-        void IDisposable.Dispose()
+        public void Dispose()
         {
             _Machine.Termination();
 

@@ -40,7 +40,7 @@ namespace Astringent.Game20220410.Sources
             UnityEngine.Debug.Log("new entity");
             Id = _IdDispenser.Dispatch(this);
 
-            var mgr = Service.GetWorld().EntityManager;
+            var mgr = Dots.Systems.Service.GetWorld().EntityManager;
             _Entity  = mgr.Instantiate(SoulPrototypesProvider.ActorEntity);
             mgr.SetComponentData(_Entity, new Dots.Attributes { Data = new Attributes { Id = Id ,Speed = 1} });
 
@@ -71,7 +71,7 @@ namespace Astringent.Game20220410.Sources
             _MoveingState = new Property<MoveingState>();
 
 
-            var eventsSystem = Service.GetWorld().GetExistingSystem<Dots.Systems.EventsSystem>();
+            var eventsSystem = Dots.Systems.Service.GetWorld().GetExistingSystem<Dots.Systems.EventsSystem>();
 
             eventsSystem.MoveingState.StateEvent+= _Update;
             eventsSystem.Attributes.StateEvent += _Update;
@@ -91,7 +91,7 @@ namespace Astringent.Game20220410.Sources
             var direction = new Dots.Direction() { Value = Unity.Mathematics.math.normalizesafe(new Unity.Mathematics.float3(dir.x, 0, dir.z)) };
             Value<bool> value = new Value<bool>();
             UniRx.MainThreadDispatcher.Post((state) => {
-                var mgr = Scripts.Service.GetWorld().EntityManager;
+                var mgr = Dots.Systems.Service.GetWorld().EntityManager;
                 mgr.SetComponentData(_Entity, direction);
                 value.SetValue(true);
             }, null);
@@ -117,7 +117,7 @@ namespace Astringent.Game20220410.Sources
         {
             if (!owner.Equals(_VisionEntity))
                 return;
-            var mgr = Service.GetWorld().EntityManager;
+            var mgr = Dots.Systems.Service.GetWorld().EntityManager;
             if(mgr.GetName(element.Entity) != "ActorAvatar")
             {
                 return;
@@ -153,12 +153,12 @@ namespace Astringent.Game20220410.Sources
 
         public void Dispose()
         {
-            var eventsSystem = Service.GetWorld().GetExistingSystem<Dots.Systems.EventsSystem>();
+            var eventsSystem = Dots.Systems.Service.GetWorld().GetExistingSystem<Dots.Systems.EventsSystem>();
 
             eventsSystem.TriggerEventBufferElement.StateEvent -= _Update;
             eventsSystem.MoveingState.StateEvent -= _Update;
             eventsSystem.Attributes.StateEvent -= _Update;
-            Service.GetWorld().EntityManager.DestroyEntity(_Entity);
+            Dots.Systems.Service.GetWorld().EntityManager.DestroyEntity(_Entity);
         }
     }
 }

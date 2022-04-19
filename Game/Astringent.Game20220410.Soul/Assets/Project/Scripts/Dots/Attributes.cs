@@ -2,6 +2,9 @@
 
 namespace Astringent.Game20220410.Dots
 {
+    namespace Systems
+    {
+    }
     public struct Attributes : IComponentData
     {
         public Protocol.Attributes Data;

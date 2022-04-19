@@ -29,7 +29,7 @@ namespace Astringent.Game20220410.Sources
             this._Keeper = keeper;
             _Entity = new Entity();
 
-            _WorldTime = new Property<double>(Scripts.Service.GetWorld().Time.ElapsedTime);
+            _WorldTime = new Property<double>(Dots.Systems.Service.GetWorld().Time.ElapsedTime);
 
 
         }
@@ -91,11 +91,11 @@ namespace Astringent.Game20220410.Sources
             _VisionEntites.Clear();
             _VisionEntites.AddRange(entites) ;
 
-            _DeltaTime += Scripts.Service.GetWorld().Time.DeltaTime;
+            _DeltaTime += Dots.Systems.Service.GetWorld().Time.DeltaTime;
             if(_DeltaTime > 5)
             {
                 _DeltaTime = 0;
-                _WorldTime.Value = Scripts.Service.GetWorld().Time.ElapsedTime;
+                _WorldTime.Value = Dots.Systems.Service.GetWorld().Time.ElapsedTime;
             }      
         }
 

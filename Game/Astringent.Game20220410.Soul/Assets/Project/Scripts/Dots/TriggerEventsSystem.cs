@@ -21,7 +21,7 @@ namespace Astringent.Game20220410.Dots.Systems
     {
         protected override void OnUpdate()
         {
-            var mgr = Scripts.Service.GetWorld().EntityManager;
+            var mgr = Dots.Systems.Service.GetWorld().EntityManager;
             Entities.WithNone<TriggerEventBufferElement>().WithStructuralChanges().ForEach((in Entity entity, in PhysicsCollider collider) => {
                 mgr.AddBuffer<TriggerEventBufferElement>(entity);
             }).Run();
