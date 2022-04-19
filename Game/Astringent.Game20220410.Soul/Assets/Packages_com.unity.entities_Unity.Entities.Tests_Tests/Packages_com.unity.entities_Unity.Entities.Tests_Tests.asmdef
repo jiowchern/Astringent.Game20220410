@@ -1,0 +1,9 @@
+{
+    "name": "Packages_com.unity.entities_Unity.Entities.Tests_Tests",
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ]
+}

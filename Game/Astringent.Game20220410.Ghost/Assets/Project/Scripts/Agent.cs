@@ -36,7 +36,7 @@ namespace Astringent.Game20220410
        
 
         public Connecter Connecter;
-        
+        public UnityEngine.UI.Text Ip;
         private IAgent _Agent;
 
 
@@ -93,7 +93,7 @@ namespace Astringent.Game20220410
             };
             if(_ActiveEvent !=null)
                 _ActiveEvent(_Agent);
-            Connecter.Connect("127.0.0.1:53100");            
+            Connecter.Connect($"{Ip.text}:53100");            
         }
 
 

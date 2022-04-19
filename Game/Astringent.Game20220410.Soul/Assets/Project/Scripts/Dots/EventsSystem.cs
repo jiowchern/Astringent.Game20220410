@@ -48,7 +48,7 @@ namespace Astringent.Game20220410.Dots.Systems
             });            
 
             Attributes.Update(writter => {
-                Entities.WithChangeFilter<Dots.ActorAttributes>().ForEach((in Entity owner, in Dots.ActorAttributes attributes) =>
+                Entities.WithChangeFilter<Dots.Attributes>().ForEach((in Entity owner, in Dots.Attributes attributes) =>
                 {
                     writter.Enqueue(new EventsSystemHandler<Protocol.Attributes>.Data() { State = attributes.Data,  Owner = owner }); 
                 }).Schedule(Dependency).Complete();

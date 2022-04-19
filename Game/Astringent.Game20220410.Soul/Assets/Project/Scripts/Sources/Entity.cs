@@ -42,7 +42,7 @@ namespace Astringent.Game20220410.Sources
 
             var mgr = Service.GetWorld().EntityManager;
             _Entity  = mgr.Instantiate(SoulPrototypesProvider.ActorEntity);
-            mgr.SetComponentData(_Entity, new Dots.ActorAttributes { Data = new Attributes { Id = Id ,Speed = 1} });
+            mgr.SetComponentData(_Entity, new Dots.Attributes { Data = new Attributes { Id = Id ,Speed = 1} });
 
             var linked = mgr.GetBuffer<Unity.Entities.LinkedEntityGroup>(_Entity);
             
@@ -127,7 +127,7 @@ namespace Astringent.Game20220410.Sources
                 return;
 
             var parent = mgr.GetComponentData<Unity.Transforms.Parent>(element.Entity);
-            var attr = mgr.GetComponentData<Dots.ActorAttributes>(parent.Value);
+            var attr = mgr.GetComponentData<Dots.Attributes>(parent.Value);
             
             if(element.State == Dots.PhysicsEventState.Enter)
             {

@@ -96,7 +96,7 @@ namespace Astringent.Game20220410.Sources
             {
                 _DeltaTime = 0;
                 _WorldTime.Value = Scripts.Service.GetWorld().Time.ElapsedTime;
-            }
+            }      
         }
 
         Value<bool> IPlayer.Quit()
