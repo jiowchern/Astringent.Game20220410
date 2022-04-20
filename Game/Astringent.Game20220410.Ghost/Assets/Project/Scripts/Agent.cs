@@ -33,8 +33,8 @@ namespace Astringent.Game20220410
                 _ActiveEvent -= value;
             } 
         }
-       
 
+        public int Port;
         public Connecter Connecter;
         public UnityEngine.UI.Text Ip;
         private IAgent _Agent;
@@ -87,13 +87,14 @@ namespace Astringent.Game20220410
             _Agent = Regulus.Remote.Client.Provider.CreateAgent(Astringent.Game20220410.Protocol.Provider.Create(), Connecter);
             _UpdateAction = _Agent.Update;
             _DestroyAction = () => {
+                Connecter.Disconnect();
                 _UpdateAction = _UpdateEmpty;
                 _Agent.Dispose();
                 _Agent = null;
             };
             if(_ActiveEvent !=null)
                 _ActiveEvent(_Agent);
-            Connecter.Connect($"{Ip.text}:53100");            
+            Connecter.Connect($"{Ip.text}:{Port}");            
         }
 
 
@@ -101,8 +102,13 @@ namespace Astringent.Game20220410
         {
             _DestroyAction();
             _DestroyAction = _UpdateEmpty;
-            Connecter.Disconnect();
             
+            
+        }
+
+        private void OnApplicationQuit()
+        {
+            Disconnect();
         }
 
     }

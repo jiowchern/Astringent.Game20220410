@@ -158,7 +158,11 @@ namespace Astringent.Game20220410.Sources
             eventsSystem.TriggerEventBufferElement.StateEvent -= _Update;
             eventsSystem.MoveingState.StateEvent -= _Update;
             eventsSystem.Attributes.StateEvent -= _Update;
-            Dots.Systems.Service.GetWorld().EntityManager.DestroyEntity(_Entity);
+
+            UniRx.MainThreadDispatcher.Post((o) => {
+                Dots.Systems.Service.GetWorld().EntityManager.DestroyEntity(_Entity);
+            },null);
+            
         }
     }
 }

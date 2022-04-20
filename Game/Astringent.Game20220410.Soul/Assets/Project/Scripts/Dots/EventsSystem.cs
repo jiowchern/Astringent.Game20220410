@@ -60,7 +60,8 @@ namespace Astringent.Game20220410.Dots.Systems
                 {
                     foreach (var element in elements)
                     {
-                        writter.Enqueue(new EventsSystemHandler<TriggerEventBufferElement>.Data() { State = element, Owner = owner }); ;
+                        if(!element._isStale)
+                            writter.Enqueue(new EventsSystemHandler<TriggerEventBufferElement>.Data() { State = element, Owner = owner }); ;
                     }
                     
                 }).Schedule(Dependency).Complete();
