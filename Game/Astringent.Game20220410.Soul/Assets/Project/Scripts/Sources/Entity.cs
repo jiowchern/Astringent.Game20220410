@@ -41,7 +41,7 @@ namespace Astringent.Game20220410.Sources
             Id = _IdDispenser.Dispatch(this);
 
             var mgr = Dots.Systems.Service.GetWorld().EntityManager;
-            _Entity  = mgr.Instantiate(SoulPrototypesProvider.ActorEntity);
+            _Entity  = mgr.Instantiate(PrototypesProvider.ActorEntity);
             mgr.SetComponentData(_Entity, new Dots.Attributes { Data = new Attributes { Id = Id ,Speed = 1} });
 
             var linked = mgr.GetBuffer<Unity.Entities.LinkedEntityGroup>(_Entity);
