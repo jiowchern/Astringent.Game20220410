@@ -10,14 +10,14 @@ namespace Astringent.Game20220410.Sources
     public class User : System.IDisposable 
     {
         
-        readonly EntitesKeeper _Keeper;
+        readonly EntitiesKeeper _Keeper;
         public readonly IBinder Binder;
 
 
         System.Action _Remover;
 
         readonly Regulus.Utility.StatusMachine _Machine;
-        public User(EntitesKeeper keeper, Regulus.Remote.IBinder binder)
+        public User(EntitiesKeeper keeper, Regulus.Remote.IBinder binder)
         {
             _Machine = new Regulus.Utility.StatusMachine();
             

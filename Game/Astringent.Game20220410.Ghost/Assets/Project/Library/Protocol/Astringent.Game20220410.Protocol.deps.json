@@ -318,7 +318,7 @@
     "Regulus.Network/0.1.11.10-alpha": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-sUQBqYs9FiAbdAqO7qwHZyulR8tooFbWfHN9DzL/MmfAnnBoW+JwEe+X18LxxM5tITCW75hoCHKuFH0wTYixSw==",
+      "sha512": "sha512-g2vMVGpBa/tVhmsFjsOTEfxOUJuMJ+JRI1v5WUsZyw62UgVV9upgOLDCKvv6A304kiCn8fiZeho2OTuDR7YeZQ==",
       "path": "regulus.network/0.1.11.10-alpha",
       "hashPath": "regulus.network.0.1.11.10-alpha.nupkg.sha512"
     },
@@ -332,21 +332,21 @@
     "Regulus.Remote.Tools.Protocol.Sources/0.0.0.13-alpha": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-IlJ9kI1QxuWVr43p9niq1GBV1h3O3GhX6YasmTDd0XeXtRFOahVYy/pan3RrbKmYMqZL3PIfOKkRUgj6m0hZgg==",
+      "sha512": "sha512-GBa9PdNlW78rSIAYMEG17837xgmRKeitGjjJ5+eSc+MREejhiihnVF32JvtWhnYuqgUwW3/4NiQlRNgYF0FYFA==",
       "path": "regulus.remote.tools.protocol.sources/0.0.0.13-alpha",
       "hashPath": "regulus.remote.tools.protocol.sources.0.0.0.13-alpha.nupkg.sha512"
     },
     "Regulus.Serialization/0.1.11.10-alpha": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-2yqx/XUGf2XYd3/s6c+5QOzX+/22ufI/HdnPYROEYu+0QoMl/qhCQUH9ILQ2hO4yA7WV22TFDMOMTQwvYoupTA==",
+      "sha512": "sha512-4/kMBugHpImKJxeh+WSWL638neoy5sdWnUUdVZXADdtbiKtcqK+Nxi8YqCskIKjHuM5Vsfr55zEgpglJuNNoLA==",
       "path": "regulus.serialization/0.1.11.10-alpha",
       "hashPath": "regulus.serialization.0.1.11.10-alpha.nupkg.sha512"
     },
     "Regulus.Utility/0.1.11.10-alpha": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-tiSavCAge1KLxRkw9LrpmUxhbKSQ8V9lXtRzmhnH/C8DTz8Qyb4n8OFQuDPo0YPlUeI+eu0VxII9KZ3/iJjW/A==",
+      "sha512": "sha512-7zE6Eb3wEw0ufnyAn58JxrPUrV1rKJ7fNa7WnSl7YdSl+ZinPxXcFbFx0ZI0tHRZ9a3sU2VAaySDT8UzT8f8vQ==",
       "path": "regulus.utility/0.1.11.10-alpha",
       "hashPath": "regulus.utility.0.1.11.10-alpha.nupkg.sha512"
     },

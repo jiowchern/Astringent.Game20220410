@@ -2,11 +2,10 @@
 
 namespace Astringent.Game20220410.Dots
 {
-    namespace Systems
-    {
-    }
+    
     public struct Attributes : IComponentData
     {
+        public int Id;
         public Protocol.Attributes Data;
 
         public static implicit operator Attributes(Protocol.Attributes data)

@@ -12,7 +12,7 @@ namespace Astringent.Game20220410.Sources
     {
         static IdDispenser _IdDispenser = new IdDispenser();
         private readonly Unity.Entities.Entity _VisionEntity;
-        private readonly Unity.Entities.Entity _AvatarEntity;
+
         public readonly int Id;
         private readonly Unity.Entities.Entity _Entity;
         private readonly Property<Attributes> _Attributes;
@@ -33,49 +33,44 @@ namespace Astringent.Game20220410.Sources
             return array;
         }
 
-        public Entity()
+        public Entity(Unity.Entities.Entity prototype)
         {
             _VisionEntites = new System.Collections.Generic.List<int>();
+
+            _Attributes = new Property<Attributes>();
+            _MoveingState = new Property<MoveingState>();
 
             UnityEngine.Debug.Log("new entity");
             Id = _IdDispenser.Dispatch(this);
 
             var mgr = Dots.Systems.Service.GetWorld().EntityManager;
-            _Entity  = mgr.Instantiate(PrototypesProvider.ActorEntity);
-            mgr.SetComponentData(_Entity, new Dots.Attributes { Data = new Attributes { Id = Id ,Speed = 1} });
+            _Entity  = mgr.Instantiate(prototype);
+            mgr.AddComponent<Dots.MoveingState>(_Entity);
+            mgr.AddComponent<Dots.Direction>(_Entity);
+            mgr.AddComponent<Dots.Attributes>(_Entity);
+            mgr.SetComponentData(_Entity, new Dots.Attributes { Id = Id ,Data = new Attributes { Appertance = APPEARANCE.Actor } });
+            mgr.SetComponentData(_Entity, new Dots.MoveingState { Speed = 1 });
 
             var linked = mgr.GetBuffer<Unity.Entities.LinkedEntityGroup>(_Entity);
-            
-            _VisionEntity = ( from g in linked.ToEnumerable()
-                              where mgr.GetName(g.Value) == "Vision"
-                      select g.Value).Single();
-
-            _AvatarEntity = (from g in linked.ToEnumerable()
-                             where mgr.GetName(g.Value) == "ActorAvatar"
-                             select g.Value).Single();
-
-            mgr.AddComponent<Unity.Transforms.Parent>(_VisionEntity);
-            mgr.AddComponent<Unity.Transforms.LocalToParent>(_VisionEntity);
-            mgr.SetComponentData(_VisionEntity, new Unity.Transforms.Parent { Value = _Entity });
-
-
-            mgr.AddComponent<Unity.Transforms.Parent>(_AvatarEntity);
-            mgr.AddComponent<Unity.Transforms.LocalToParent>(_AvatarEntity);
-            mgr.SetComponentData(_AvatarEntity, new Unity.Transforms.Parent { Value = _Entity });           
-
-
-
-
-
-            _Attributes = new Property<Attributes>();
-            _MoveingState = new Property<MoveingState>();
-
-
             var eventsSystem = Dots.Systems.Service.GetWorld().GetExistingSystem<Dots.Systems.EventsSystem>();
 
             eventsSystem.MoveingState.StateEvent+= _Update;
             eventsSystem.Attributes.StateEvent += _Update;
             eventsSystem.TriggerEventBufferElement.StateEvent += _Update;
+
+
+            var visisons = from g in linked.ToEnumerable()
+                           where mgr.GetName(g.Value) == "Vision"
+                           select g.Value;
+
+            if (visisons.Any())
+            {
+                _VisionEntity = visisons.Single();
+                mgr.AddBuffer<Dots.TriggerEventBufferElement>(_VisionEntity);
+                mgr.AddComponent<Unity.Transforms.Parent>(_VisionEntity);
+                mgr.AddComponent<Unity.Transforms.LocalToParent>(_VisionEntity);
+                mgr.SetComponentData(_VisionEntity, new Unity.Transforms.Parent { Value = _Entity });
+            }
 
 
             UnityEngine.Debug.Log("new entity ok");
@@ -115,29 +110,26 @@ namespace Astringent.Game20220410.Sources
         }
         private void _Update(Unity.Entities.Entity owner, Dots.TriggerEventBufferElement element)
         {
+            if (element.State == Dots.PhysicsEventState.Stay)
+                return;
             if (!owner.Equals(_VisionEntity))
                 return;
             var mgr = Dots.Systems.Service.GetWorld().EntityManager;
-            if(mgr.GetName(element.Entity) != "ActorAvatar")
-            {
-                return;
-            }
-
-            if (element.State == Dots.PhysicsEventState.Stay)
+            
+            if (!mgr.HasComponent<Dots.Attributes>(element.Entity))
                 return;
 
-            var parent = mgr.GetComponentData<Unity.Transforms.Parent>(element.Entity);
-            var attr = mgr.GetComponentData<Dots.Attributes>(parent.Value);
+            var attr = mgr.GetComponentData<Dots.Attributes>(element.Entity);
             
             if(element.State == Dots.PhysicsEventState.Enter)
             {
                 lock(_VisionEntites)
-                    _VisionEntites.Add(attr.Data.Id);
+                    _VisionEntites.Add(attr.Id);
             }
             else if (element.State == Dots.PhysicsEventState.Exit)
             {
                 lock(_VisionEntites)
-                    _VisionEntites.RemoveAll(i => i == attr.Data.Id);
+                    _VisionEntites.RemoveAll(i => i == attr.Id);
             }
 
 
@@ -159,10 +151,7 @@ namespace Astringent.Game20220410.Sources
             eventsSystem.MoveingState.StateEvent -= _Update;
             eventsSystem.Attributes.StateEvent -= _Update;
 
-            UniRx.MainThreadDispatcher.Post((o) => {
-                Dots.Systems.Service.GetWorld().EntityManager.DestroyEntity(_Entity);
-            },null);
-            
+            Dots.Systems.Service.GetWorld().EntityManager.DestroyEntity(_Entity);
         }
     }
 }

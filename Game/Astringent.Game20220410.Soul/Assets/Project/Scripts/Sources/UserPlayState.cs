@@ -14,20 +14,20 @@ namespace Astringent.Game20220410.Sources
         readonly RepeatableBinder _EntityBinder;
         private readonly Entity _Entity;
         
-        private readonly EntitesKeeper _Keeper;
+        private readonly EntitiesKeeper _Keeper;
 
         public event Action DoneEvent;
 
-        readonly System.Collections.Generic.List<int> _VisionEntites;
+        readonly System.Collections.Generic.List<int> _VisionEntities;
         readonly Property<double> _WorldTime;
-        public UserPlayState(IBinder binder, EntitesKeeper keeper)
+        public UserPlayState(IBinder binder, EntitiesKeeper keeper)
         {
-            _VisionEntites = new System.Collections.Generic.List<int>();
+            _VisionEntities = new System.Collections.Generic.List<int>();
             _EntityBinder = new RepeatableBinder(binder);
             this._Binder =new CompositeBinder( binder);            
 
             this._Keeper = keeper;
-            _Entity = new Entity();
+            _Entity = new Entity(Scripts.PrototypesProvider.ActorEntity);
 
             _WorldTime = new Property<double>(Dots.Systems.Service.GetWorld().Time.ElapsedTime);
 
@@ -71,7 +71,7 @@ namespace Astringent.Game20220410.Sources
         void IStatus.Update()
         {
             var entites = _Entity.VisionEntites;
-            foreach (var entiteId in entites.Except(_VisionEntites))
+            foreach (var entiteId in entites.Except(_VisionEntities))
             {
                 Entity entity;
                 if (!_Keeper.Entites.TryGetValue(entiteId, out entity))
@@ -80,7 +80,7 @@ namespace Astringent.Game20220410.Sources
                 _EntityBinder.Add<IEntity>(entity);
             }
 
-            foreach (var entiteId in _VisionEntites.Except(entites))
+            foreach (var entiteId in _VisionEntities.Except(entites))
             {
                 Entity entity;
                 if (!_Keeper.Entites.TryGetValue(entiteId, out entity))
@@ -88,8 +88,8 @@ namespace Astringent.Game20220410.Sources
 
                 _EntityBinder.Remove<IEntity>(entity);
             }
-            _VisionEntites.Clear();
-            _VisionEntites.AddRange(entites) ;
+            _VisionEntities.Clear();
+            _VisionEntities.AddRange(entites) ;
 
             _DeltaTime += Dots.Systems.Service.GetWorld().Time.DeltaTime;
             if(_DeltaTime > 5)

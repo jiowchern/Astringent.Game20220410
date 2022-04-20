@@ -5,12 +5,11 @@ using Astringent.Game20220410.Protocol;
 using System.Collections.Generic;
 namespace Astringent.Game20220410.Scripts
 {
-    
     public class PrototypesProvider : MonoBehaviour, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
     {
         
         public GameObject ActorPrefab;
-
+        
 
         public static Entity ActorEntity { get; private set; }
         
@@ -20,10 +19,9 @@ namespace Astringent.Game20220410.Scripts
             var entiry = conversionSystem.GetPrimaryEntity(ActorPrefab);
             
 
-            dstManager.AddComponent<Dots.MoveingState>(entiry);
-            dstManager.AddComponent<Dots.Direction>(entiry);
-            dstManager.AddComponent<Dots.Attributes>(entiry);           
+          
 
+            
             ActorEntity = entiry;
 
             
