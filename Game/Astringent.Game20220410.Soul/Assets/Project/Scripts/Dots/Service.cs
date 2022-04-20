@@ -40,6 +40,7 @@ namespace Astringent.Game20220410.Dots
             readonly System.Collections.Concurrent.ConcurrentQueue<BinderCommand> _Commands;
             readonly System.Collections.Concurrent.ConcurrentDictionary<Regulus.Remote.IBinder, Sources.User> _Users;
             private readonly EntitiesKeeper _Keeper;
+            public readonly EntitiesKeeper Keeper;
 
             public Service()
             {
@@ -47,6 +48,7 @@ namespace Astringent.Game20220410.Dots
                 _Users = new System.Collections.Concurrent.ConcurrentDictionary<IBinder, Sources.User>();
 
                 _Keeper = new EntitiesKeeper();
+                Keeper = _Keeper;
                 var protocol = Astringent.Game20220410.Protocol.Provider.Create();
                 _TcpSet = Regulus.Remote.Server.Provider.CreateTcpService(this, protocol);
                 _Close = () => {

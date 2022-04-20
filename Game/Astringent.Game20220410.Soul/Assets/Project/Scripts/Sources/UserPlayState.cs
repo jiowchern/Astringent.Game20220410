@@ -27,7 +27,7 @@ namespace Astringent.Game20220410.Sources
             this._Binder =new CompositeBinder( binder);            
 
             this._Keeper = keeper;
-            _Entity = new Entity(Scripts.PrototypesProvider.ActorEntity);
+            _Entity = new Entity(Scripts.PrototypesProvider.New() , APPEARANCE.Actor);
 
             _WorldTime = new Property<double>(Dots.Systems.Service.GetWorld().Time.ElapsedTime);
 

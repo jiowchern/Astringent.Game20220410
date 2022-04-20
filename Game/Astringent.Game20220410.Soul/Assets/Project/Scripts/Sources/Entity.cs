@@ -33,7 +33,7 @@ namespace Astringent.Game20220410.Sources
             return array;
         }
 
-        public Entity(Unity.Entities.Entity prototype)
+        public Entity(Unity.Entities.Entity e, APPEARANCE appearance)
         {
             _VisionEntites = new System.Collections.Generic.List<int>();
 
@@ -44,36 +44,52 @@ namespace Astringent.Game20220410.Sources
             Id = _IdDispenser.Dispatch(this);
 
             var mgr = Dots.Systems.Service.GetWorld().EntityManager;
-            _Entity  = mgr.Instantiate(prototype);
+            _Entity = e;
             mgr.AddComponent<Dots.MoveingState>(_Entity);
             mgr.AddComponent<Dots.Direction>(_Entity);
             mgr.AddComponent<Dots.Attributes>(_Entity);
-            mgr.SetComponentData(_Entity, new Dots.Attributes { Id = Id ,Data = new Attributes { Appertance = APPEARANCE.Actor } });
+            mgr.AddBuffer<Dots.TriggerEventBufferElement>(_Entity);
+
+            mgr.SetComponentData(_Entity, new Dots.Attributes { Id = Id, Data = new Attributes { Appertance = appearance } });
             mgr.SetComponentData(_Entity, new Dots.MoveingState { Speed = 1 });
 
-            var linked = mgr.GetBuffer<Unity.Entities.LinkedEntityGroup>(_Entity);
+
             var eventsSystem = Dots.Systems.Service.GetWorld().GetExistingSystem<Dots.Systems.EventsSystem>();
 
-            eventsSystem.MoveingState.StateEvent+= _Update;
+            eventsSystem.MoveingState.StateEvent += _Update;
             eventsSystem.Attributes.StateEvent += _Update;
-            eventsSystem.TriggerEventBufferElement.StateEvent += _Update;
+            eventsSystem.TriggerEventBufferElement.StateEvent += _UpdateVision;
+            
 
+            _VisionEntity = _CreateVision(mgr,_Entity);
 
+            UnityEngine.Debug.Log("new entity ok");
+        }
+
+       
+
+        private Unity.Entities.Entity _CreateVision(Unity.Entities.EntityManager mgr, Unity.Entities.Entity owner)
+        {
+            if(!mgr.HasComponent<Unity.Entities.LinkedEntityGroup>(owner))
+                return default(Unity.Entities.Entity);
+
+            var linked = mgr.GetBuffer<Unity.Entities.LinkedEntityGroup>(owner);
             var visisons = from g in linked.ToEnumerable()
                            where mgr.GetName(g.Value) == "Vision"
                            select g.Value;
 
-            if (visisons.Any())
+            if (!visisons.Any())
             {
-                _VisionEntity = visisons.Single();
-                mgr.AddBuffer<Dots.TriggerEventBufferElement>(_VisionEntity);
-                mgr.AddComponent<Unity.Transforms.Parent>(_VisionEntity);
-                mgr.AddComponent<Unity.Transforms.LocalToParent>(_VisionEntity);
-                mgr.SetComponentData(_VisionEntity, new Unity.Transforms.Parent { Value = _Entity });
+                return default(Unity.Entities.Entity);
             }
+            var vision = visisons.Single();
+            mgr.AddBuffer<Dots.TriggerEventBufferElement>(vision);
+            mgr.AddComponent<Unity.Transforms.Parent>(vision);
+            mgr.AddComponent<Unity.Transforms.LocalToParent>(vision);
+            mgr.SetComponentData(vision, new Unity.Transforms.Parent { Value = owner });
+            return vision;
 
-
-            UnityEngine.Debug.Log("new entity ok");
+            
         }
 
         private void _Empty(int obj)
@@ -89,6 +105,7 @@ namespace Astringent.Game20220410.Sources
                 var mgr = Dots.Systems.Service.GetWorld().EntityManager;
                 mgr.SetComponentData(_Entity, direction);
                 value.SetValue(true);
+                UnityEngine.Debug.Log("seeet dir");
             }, null);
 
             return value;
@@ -105,10 +122,11 @@ namespace Astringent.Game20220410.Sources
         {
             if(!owner.Equals(_Entity) )
                 return;
-            
+            UnityEngine.Debug.Log("update =atrt");
             _Attributes.Value = arg2;
         }
-        private void _Update(Unity.Entities.Entity owner, Dots.TriggerEventBufferElement element)
+        
+        private void _UpdateVision(Unity.Entities.Entity owner, Dots.TriggerEventBufferElement element)
         {
             if (element.State == Dots.PhysicsEventState.Stay)
                 return;
@@ -140,6 +158,7 @@ namespace Astringent.Game20220410.Sources
         {
             if (!owner.Equals(_Entity))
                 return;
+            UnityEngine.Debug.Log("update =move");
             _MoveingState.Value = arg2;
         }
 
@@ -147,7 +166,8 @@ namespace Astringent.Game20220410.Sources
         {
             var eventsSystem = Dots.Systems.Service.GetWorld().GetExistingSystem<Dots.Systems.EventsSystem>();
 
-            eventsSystem.TriggerEventBufferElement.StateEvent -= _Update;
+            
+            eventsSystem.TriggerEventBufferElement.StateEvent -= _UpdateVision;
             eventsSystem.MoveingState.StateEvent -= _Update;
             eventsSystem.Attributes.StateEvent -= _Update;
 

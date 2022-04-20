@@ -37,17 +37,42 @@ namespace Astringent.Game20220410.Dots.Systems
                 translation.Value = move_state.Data.Position + move_state.Data.Vector * interval;
             }).ScheduleParallel();*/
 
-            
 
-            Entities.WithChangeFilter<Direction>().ForEach((ref Unity.Physics.PhysicsVelocity velocity, ref Dots.MoveingState move_state, in Direction dir, in Dots.Attributes attributes, in Translation translation) => 
+            Dependency= Entities.WithChangeFilter<Direction>().ForEach((ref Unity.Physics.PhysicsVelocity velocity, ref Dots.MoveingState move_state, in Direction dir, in Dots.Attributes attributes, in Translation translation) =>
             {
                 move_state.Data.StartTime = nowTime;
                 move_state.Data.Position = translation.Value;
                 move_state.Data.Vector = dir.Value * move_state.Speed;
                 velocity.Linear = move_state.Data.Vector;
-                
-            }).ScheduleParallel();
+            }).ScheduleParallel(Dependency);
 
+
+            Dependency = Entities.WithChangeFilter<TriggerEventBufferElement>().ForEach((ref Direction dir, in DynamicBuffer<TriggerEventBufferElement> eles) =>
+            {
+                foreach (var ele in eles)
+                {
+                    
+                    if (ele.State != PhysicsEventState.Enter )
+                        continue;
+
+                    
+                    if (!HasComponent<Attributes>(ele.Entity))
+                        continue;
+
+                    var com = GetComponent<Attributes>(ele.Entity);
+                    if (com.Data.Appertance != Protocol.APPEARANCE.Barrier)
+                        continue;
+
+                    
+                    //velocity.Linear = Unity.Mathematics.float3.zero;
+                    dir = new Direction() { Value = Unity.Mathematics.float3.zero };
+                    UnityEngine.Debug.Log("set dir");
+                }                
+            }).ScheduleParallel(Dependency);
+
+
+
+           
         }
     }
 }

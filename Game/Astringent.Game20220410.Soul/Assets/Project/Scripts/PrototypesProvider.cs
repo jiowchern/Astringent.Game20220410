@@ -3,6 +3,8 @@
 using UnityEngine;
 using Astringent.Game20220410.Protocol;
 using System.Collections.Generic;
+using System;
+
 namespace Astringent.Game20220410.Scripts
 {
     public class PrototypesProvider : MonoBehaviour, IConvertGameObjectToEntity, IDeclareReferencedPrefabs
@@ -31,6 +33,11 @@ namespace Astringent.Game20220410.Scripts
         {
             referencedPrefabs.Add(ActorPrefab);
 
+        }
+
+        internal static Entity New()
+        {
+            return Dots.Systems.Service.GetWorld().EntityManager.Instantiate(ActorEntity);
         }
     }
 
