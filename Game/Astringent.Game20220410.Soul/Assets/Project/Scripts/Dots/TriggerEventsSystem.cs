@@ -82,6 +82,8 @@ namespace Astringent.Game20220410.Dots.Systems
                     // If it's a new entity, add as Enter
                     if (!foundMatch)
                     {
+
+                        UnityEngine.Debug.Log("PhysicsEventState.Enter");
                         triggerEventBuffer.Add(new TriggerEventBufferElement
                         {
                             Entity = otherEntity,

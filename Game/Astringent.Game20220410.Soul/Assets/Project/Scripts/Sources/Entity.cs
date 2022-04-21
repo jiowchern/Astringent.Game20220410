@@ -8,6 +8,7 @@ using Unity.Mathematics;
 
 namespace Astringent.Game20220410.Sources
 {
+
     public class Entity : IEntity , IDisposable
     {
         static IdDispenser _IdDispenser = new IdDispenser();
@@ -17,6 +18,8 @@ namespace Astringent.Game20220410.Sources
         private readonly Unity.Entities.Entity _Entity;
         private readonly Property<Attributes> _Attributes;
         private readonly Property<MoveingState> _MoveingState;
+
+        System.Collections.Generic.List<System.Action> _Releases;
 
         
         readonly System.Collections.Generic.List<int> _VisionEntites; 
@@ -35,21 +38,25 @@ namespace Astringent.Game20220410.Sources
 
         public Entity(Unity.Entities.Entity e, APPEARANCE appearance)
         {
+            _Releases = new List<Action>();
             _VisionEntites = new System.Collections.Generic.List<int>();
 
             _Attributes = new Property<Attributes>();
             _MoveingState = new Property<MoveingState>();
 
-            UnityEngine.Debug.Log("new entity");
+            
             Id = _IdDispenser.Dispatch(this);
 
             var mgr = Dots.Systems.Service.GetWorld().EntityManager;
-            _Entity = e;
+            _Entity = e;            
             mgr.AddComponent<Dots.MoveingState>(_Entity);
             mgr.AddComponent<Dots.Direction>(_Entity);
             mgr.AddComponent<Dots.Attributes>(_Entity);
             mgr.AddComponent<Dots.Past>(_Entity);
             mgr.AddBuffer<Dots.TriggerEventBufferElement>(_Entity);
+            
+
+
 
             mgr.SetComponentData(_Entity, new Dots.Attributes { Id = Id, Data = new Attributes { Appertance = appearance } });
             mgr.SetComponentData(_Entity, new Dots.MoveingState { Speed = 1 });
@@ -58,14 +65,20 @@ namespace Astringent.Game20220410.Sources
             var eventsSystem = Dots.Systems.Service.GetWorld().GetExistingSystem<Dots.Systems.EventsSystem>();
 
             eventsSystem.MoveingState.StateEvent += _Update;
-            eventsSystem.Attributes.StateEvent += _Update;
-            eventsSystem.TriggerEventBufferElement.StateEvent += _UpdateVision;
-            eventsSystem.TriggerEventBufferElement.StateEvent += _UpdateMoveStop;
+            eventsSystem.Attributes.StateEvent += _Update;            
+            
 
+            
+            
 
+            _Releases.Add(() => {
+            
+                eventsSystem.MoveingState.StateEvent -= _Update;
+                eventsSystem.Attributes.StateEvent -= _Update;
+            });
             _VisionEntity = _CreateVision(mgr,_Entity);
 
-            UnityEngine.Debug.Log("new entity ok");
+   
         }
 
        
@@ -83,11 +96,20 @@ namespace Astringent.Game20220410.Sources
             {
                 return default(Unity.Entities.Entity);
             }
-            var vision = visisons.Single();
-            mgr.AddBuffer<Dots.TriggerEventBufferElement>(vision);
+            var eventsSystem = Dots.Systems.Service.GetWorld().GetExistingSystem<Dots.Systems.EventsSystem>();
+            eventsSystem.TriggerEventBufferElement.StateEvent += _UpdateVision;
+            _Releases.Add(() => { eventsSystem.TriggerEventBufferElement.StateEvent -= _UpdateVision; });
+
+            var vision = visisons.Single();            
             mgr.AddComponent<Unity.Transforms.Parent>(vision);
             mgr.AddComponent<Unity.Transforms.LocalToParent>(vision);
             mgr.SetComponentData(vision, new Unity.Transforms.Parent { Value = owner });
+            mgr.AddBuffer<Dots.TriggerEventBufferElement>(vision);
+            UnityEngine.Debug.Log("create vision");
+
+            
+
+            
             return vision;
 
             
@@ -121,43 +143,25 @@ namespace Astringent.Game20220410.Sources
             UnityEngine.Debug.Log("update =atrt");
             _Attributes.Value = arg2;
         }
-        private void _UpdateMoveStop(Unity.Entities.Entity owner, Dots.TriggerEventBufferElement element)
-        {
-            if (element.State != Dots.PhysicsEventState.Enter)
-                return;
-
-            UnityEngine.Debug.Log("_UpdateMoveStop 1");
-
-            if (!owner.Equals(_Entity))
-                return;
-
-            UnityEngine.Debug.Log("_UpdateMoveStop 2");
-
-            var mgr = Dots.Systems.Service.GetWorld().EntityManager;
-            if (!mgr.HasComponent<Dots.Attributes>(element.Entity))
-                return;
-
-            UnityEngine.Debug.Log("_UpdateMoveStop 3");
-            var attr = mgr.GetComponentData<Dots.Attributes>(element.Entity);
-
-            if(attr.Data.Appertance != APPEARANCE.Barrier)
-                return;
-
-            UnityEngine.Debug.Log("_UpdateMoveStop 4");
-            mgr.SetComponentData(_Entity , new Dots.Direction() { Value = float3.zero});
-        }
-
+        
         private void _UpdateVision(Unity.Entities.Entity owner, Dots.TriggerEventBufferElement element)
         {
-            if (element.State == Dots.PhysicsEventState.Stay)
-                return;
+            UnityEngine.Debug.Log(owner.ToFixedString());
+            UnityEngine.Debug.Log(_VisionEntity.ToFixedString());
             if (!owner.Equals(_VisionEntity))
                 return;
+            //UnityEngine.Debug.Log("TriggerEventBufferElement  1");
+            if (element.State == Dots.PhysicsEventState.Stay)
+                return;
+            
+            
+
+            UnityEngine.Debug.Log("TriggerEventBufferElement  3");
             var mgr = Dots.Systems.Service.GetWorld().EntityManager;
             
             if (!mgr.HasComponent<Dots.Attributes>(element.Entity))
                 return;
-
+            UnityEngine.Debug.Log("TriggerEventBufferElement  4");
             var attr = mgr.GetComponentData<Dots.Attributes>(element.Entity);
             
             if(element.State == Dots.PhysicsEventState.Enter)
@@ -187,15 +191,12 @@ namespace Astringent.Game20220410.Sources
 
         public void Dispose()
         {
-            var eventsSystem = Dots.Systems.Service.GetWorld().GetExistingSystem<Dots.Systems.EventsSystem>();
 
-
-            eventsSystem.TriggerEventBufferElement.StateEvent -= _UpdateMoveStop;
-            eventsSystem.TriggerEventBufferElement.StateEvent -= _UpdateVision;
-            eventsSystem.MoveingState.StateEvent -= _Update;
-            eventsSystem.Attributes.StateEvent -= _Update;
-
-            Dots.Systems.Service.GetWorld().EntityManager.DestroyEntity(_Entity);
+            foreach (var item in _Releases)
+            {
+                item();
+            }
+            
         }
     }
 }

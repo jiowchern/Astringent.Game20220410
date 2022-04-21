@@ -6,7 +6,7 @@ using Unity.Jobs;
 namespace Astringent.Game20220410.Dots.Systems
 {
 
-    [UpdateAfter(typeof(TriggerEventsSystem))]
+    
     public partial class EventsSystem : Unity.Entities.SystemBase
     {
         
@@ -41,17 +41,23 @@ namespace Astringent.Game20220410.Dots.Systems
         {
             
             MoveingState.Update((writter) => {
-                Entities.WithChangeFilter<Dots.MoveingState>().ForEach((in Entity owner,in Dots.MoveingState move_state) =>
+                Entities.ForEach((ref Past past,in Entity owner,in Dots.MoveingState move_state) =>
                 {
+                    if (Sources.Unsafe.Equal(move_state.Data, past.MoveingState))
+                        return;
+                    past.MoveingState = move_state.Data;
                     writter.Enqueue(new EventsSystemHandler<Protocol.MoveingState>.Data() { State = move_state.Data, Owner = owner }); ;
-                }).Schedule(Dependency).Complete();
+                }).ScheduleParallel(Dependency).Complete();
             });            
 
             Attributes.Update(writter => {
-                Entities.WithChangeFilter<Dots.Attributes>().ForEach((in Entity owner, in Dots.Attributes attributes) =>
+                Entities.ForEach((ref Past past, in Entity owner, in Dots.Attributes attributes) =>
                 {
+                    if (Sources.Unsafe.Equal(attributes.Data, past.Attributes))
+                        return;
+                    past.Attributes = attributes.Data;
                     writter.Enqueue(new EventsSystemHandler<Protocol.Attributes>.Data() { State = attributes.Data,  Owner = owner }); 
-                }).Schedule(Dependency).Complete();
+                }).ScheduleParallel(Dependency).Complete();
             });
 
             TriggerEventBufferElement.Update(writter =>
@@ -64,7 +70,7 @@ namespace Astringent.Game20220410.Dots.Systems
                         writter.Enqueue(new EventsSystemHandler<TriggerEventBufferElement>.Data() { State = element, Owner = owner }); ;
                     }
                     
-                }).Schedule(Dependency).Complete();
+                }).ScheduleParallel(Dependency).Complete();
             });
         }
 

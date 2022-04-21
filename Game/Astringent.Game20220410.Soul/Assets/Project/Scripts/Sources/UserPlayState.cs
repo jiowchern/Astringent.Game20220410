@@ -15,6 +15,7 @@ namespace Astringent.Game20220410.Sources
         private readonly Entity _Entity;
         
         private readonly EntitiesKeeper _Keeper;
+        private readonly Unity.Entities.Entity _UnityEntity;
 
         public event Action DoneEvent;
 
@@ -27,7 +28,8 @@ namespace Astringent.Game20220410.Sources
             this._Binder =new CompositeBinder( binder);            
 
             this._Keeper = keeper;
-            _Entity = new Entity(Scripts.PrototypesProvider.New() , APPEARANCE.Actor);
+            _UnityEntity = Scripts.PrototypesProvider.New();
+            _Entity = new Entity(_UnityEntity, APPEARANCE.Actor);
 
             _WorldTime = new Property<double>(Dots.Systems.Service.GetWorld().Time.ElapsedTime);
 
@@ -60,6 +62,9 @@ namespace Astringent.Game20220410.Sources
             _Keeper.Entites.TryRemove(_Entity.Id, out entity);
             entity.Dispose();
 
+            var mgr = Dots.Systems.Service.GetWorld().EntityManager;
+            mgr.DestroyEntity(_UnityEntity);
+            
             UnityEngine.Debug.Log("leave play state");
         }
 

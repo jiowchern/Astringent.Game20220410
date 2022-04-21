@@ -7,7 +7,7 @@ using Unity.Transforms;
 namespace Astringent.Game20220410.Dots.Systems
 {
 
-    [UpdateAfter(typeof(TriggerEventsSystem))]
+    
     public partial class MoveingSystem : Unity.Entities.SystemBase 
     {
 
@@ -54,7 +54,7 @@ namespace Astringent.Game20220410.Dots.Systems
             
      
 
-            Dependency = Entities.ForEach((ref Direction dir, in DynamicBuffer<TriggerEventBufferElement> eles) =>
+            Dependency = Entities.ForEach((ref Direction dir, in DynamicBuffer<CollisionEventBufferElement> eles) =>
             {
                 foreach (var ele in eles)
                 {

@@ -5,7 +5,8 @@ namespace Astringent.Game20220410.Dots
     public struct Past : IComponentData
     {
         public Direction Direction;
-        public DynamicBuffer<TriggerEventBufferElement> Elements;
+        public Protocol.Attributes Attributes;
+        public Protocol.MoveingState MoveingState;
     }
 
     

@@ -20,13 +20,8 @@ namespace Astringent.Game20220410.Scripts
         {
             var entiry = conversionSystem.GetPrimaryEntity(ActorPrefab);
             
-
-          
-
-            
             ActorEntity = entiry;
-
-            
+      
         } 
 
         void IDeclareReferencedPrefabs.DeclareReferencedPrefabs(List<GameObject> referencedPrefabs)
