@@ -83,7 +83,7 @@ namespace Astringent.Game20220410.Dots.Systems
                     if (!foundMatch)
                     {
 
-                        UnityEngine.Debug.Log("PhysicsEventState.Enter");
+                        
                         triggerEventBuffer.Add(new TriggerEventBufferElement
                         {
                             Entity = otherEntity,

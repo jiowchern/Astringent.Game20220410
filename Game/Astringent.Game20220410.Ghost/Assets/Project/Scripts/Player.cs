@@ -111,6 +111,7 @@ namespace Astringent.Game20220410
         private Regulus.Remote.Value<bool> _Move(Entity actor, IPlayer player, Vector3 point)
         {
             var dir = point - actor.transform.position;
+            actor.SetDirection(dir);
             return player.SetDirection(dir); 
         }
     }

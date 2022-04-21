@@ -51,7 +51,7 @@ namespace Astringent.Game20220410.Sources
             
 
             _Keeper.Entites.TryAdd(_Entity.Id, _Entity);
-            UnityEngine.Debug.Log("enter play state");
+            
         }
 
         void IStatus.Leave()

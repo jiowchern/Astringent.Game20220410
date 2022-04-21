@@ -1,6 +1,7 @@
 ﻿using Astringent.Game20220410.Scripts;
 using Unity.Entities;
 using Unity.Jobs;
+using System.Linq;
 using Unity.Transforms;
 
 
@@ -30,56 +31,64 @@ namespace Astringent.Game20220410.Dots.Systems
         protected override void OnUpdate()
         {
             var nowTime = Dots.Systems.Service.GetWorld().Time.ElapsedTime;
-            /*Entities.ForEach((ref Translation translation, in Dots.MoveingState move_state) =>
-            {
-                var interval = (float)(nowTime - move_state.Data.StartTime);
-                translation.Value = move_state.Data.Position + move_state.Data.Vector * interval;
-            }).ScheduleParallel();*/
-
-
-           
-
-            Dependency = Entities.WithChangeFilter<Direction>().ForEach((ref Unity.Physics.PhysicsVelocity velocity, ref Dots.MoveingState move_state, in Direction dir, in Dots.Attributes attributes, in Translation translation) =>
-            {
-                move_state.Data.StartTime = nowTime;
-                move_state.Data.Position = translation.Value;
-                move_state.Data.Vector = dir.Value * move_state.Speed;
-                velocity.Linear = move_state.Data.Vector;
-                
-            }).ScheduleParallel(Dependency);
-
+            var deltaTime = Dots.Systems.Service.GetWorld().Time.DeltaTime;
+    
             var attributes = GetComponentDataFromEntity<Attributes>();
-            var elements = GetBufferFromEntity<TriggerEventBufferElement>();
 
-            
-     
-
-            Dependency = Entities.ForEach((ref Direction dir, in DynamicBuffer<CollisionEventBufferElement> eles) =>
+            Dependency = Entities.ForEach((ref Translation tran, ref Direction dir, in DynamicBuffer<CollisionEventBufferElement> eles, in MoveingState move_state) =>
             {
                 foreach (var ele in eles)
                 {
-                    
-                    if (ele.State != PhysicsEventState.Enter)
-                        continue;
-                    UnityEngine.Debug.Log("2 set dir");
+
+                    //if (ele.State == PhysicsEventState.Exit)
+                    //continue;
+
                     if (!attributes.HasComponent(ele.Entity))
                     {
                         continue;
                     }
-     
-                    UnityEngine.Debug.Log("3 set dir");
-                    Attributes com ;
-                    if(!attributes.TryGetComponent(ele.Entity, out com))
+
+
+                    Attributes com;
+                    if (!attributes.TryGetComponent(ele.Entity, out com))
                         continue;
 
                     if (com.Data.Appertance != Protocol.APPEARANCE.Barrier)
                         continue;
 
-                    UnityEngine.Debug.Log("set dir");
+                    UnityEngine.Debug.Log("set dir 0");
+                    tran.Value -= move_state.Data.Vector * (deltaTime +0.2f);
                     dir = new Direction() { Value = Unity.Mathematics.float3.zero };
-                    
+
                 }
             }).Schedule(Dependency);
+
+            Dependency = Entities.ForEach((
+                ref Past past,
+                ref Unity.Physics.PhysicsVelocity velocity, 
+                ref Dots.MoveingState move_state, 
+                in Direction dir,                
+                in Translation translation ) =>
+            {
+                if (Sources.Unsafe.Equal(past.Direction, dir))
+                    return;
+                past.Direction = dir;
+                UnityEngine.Debug.Log("change dir");
+
+                move_state.Data.StartTime = nowTime;
+                move_state.Data.Position = translation.Value;
+                move_state.Data.Vector = dir.Value * move_state.Speed;
+                velocity.Linear = move_state.Data.Vector;
+
+                past.Direction = dir;
+
+            }).Schedule(Dependency);
+
+            
+     
+     
+
+            
 
 
 

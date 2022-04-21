@@ -13,11 +13,13 @@ namespace Astringent.Game20220410.Dots.Systems
         public EventsSystemHandler<Protocol.Attributes> Attributes;
         public EventsSystemHandler<Protocol.MoveingState> MoveingState;
         public EventsSystemHandler<TriggerEventBufferElement> TriggerEventBufferElement;
+        public EventsSystemHandler<CollisionEventBufferElement> CollisionEventBufferElement;
 
 
 
         protected override void OnCreate()
         {
+            CollisionEventBufferElement = new EventsSystemHandler<CollisionEventBufferElement>();
             TriggerEventBufferElement = new EventsSystemHandler<TriggerEventBufferElement>();
             Attributes = new EventsSystemHandler<Protocol.Attributes>();
             MoveingState = new EventsSystemHandler<Protocol.MoveingState>();
@@ -31,7 +33,7 @@ namespace Astringent.Game20220410.Dots.Systems
 
         protected override void OnDestroy()
         {
-          
+            CollisionEventBufferElement.Dispose();
             Attributes.Dispose();
             MoveingState.Dispose();
             TriggerEventBufferElement.Dispose();
@@ -45,6 +47,8 @@ namespace Astringent.Game20220410.Dots.Systems
                 {
                     if (Sources.Unsafe.Equal(move_state.Data, past.MoveingState))
                         return;
+                    UnityEngine.Debug.Log("change dir evnt");
+
                     past.MoveingState = move_state.Data;
                     writter.Enqueue(new EventsSystemHandler<Protocol.MoveingState>.Data() { State = move_state.Data, Owner = owner }); ;
                 }).ScheduleParallel(Dependency).Complete();
@@ -70,6 +74,19 @@ namespace Astringent.Game20220410.Dots.Systems
                         writter.Enqueue(new EventsSystemHandler<TriggerEventBufferElement>.Data() { State = element, Owner = owner }); ;
                     }
                     
+                }).ScheduleParallel(Dependency).Complete();
+            });
+
+            CollisionEventBufferElement.Update(writter =>
+            {
+                Entities.ForEach((in Entity owner, in DynamicBuffer<CollisionEventBufferElement> elements) =>
+                {
+
+                    foreach (var element in elements)
+                    {
+                        writter.Enqueue(new EventsSystemHandler<CollisionEventBufferElement>.Data() { State = element, Owner = owner }); ;
+                    }
+
                 }).ScheduleParallel(Dependency).Complete();
             });
         }

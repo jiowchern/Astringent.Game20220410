@@ -30,7 +30,7 @@ namespace Astringent.Game20220410.Sources
                
             };
 
-            UnityEngine.Debug.Log("server get player");
+            
             
 
 
