@@ -2,7 +2,6 @@
 
 namespace Astringent.Game20220410.Dots
 {
-    
     public struct Attributes : IComponentData
     {
         public int Id;

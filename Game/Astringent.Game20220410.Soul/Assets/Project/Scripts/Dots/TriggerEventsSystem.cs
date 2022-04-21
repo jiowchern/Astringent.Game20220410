@@ -7,10 +7,6 @@ using Unity.Physics;
 using Unity.Physics.Systems;
 using Unity.Transforms;
 
-
-namespace Astringent.Game20220410.Dots
-{
-}
 namespace Astringent.Game20220410.Dots.Systems
 {
     public partial class TriggerEventsSystem : SystemBase

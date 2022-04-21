@@ -48,6 +48,7 @@ namespace Astringent.Game20220410.Sources
             mgr.AddComponent<Dots.MoveingState>(_Entity);
             mgr.AddComponent<Dots.Direction>(_Entity);
             mgr.AddComponent<Dots.Attributes>(_Entity);
+            mgr.AddComponent<Dots.Past>(_Entity);
             mgr.AddBuffer<Dots.TriggerEventBufferElement>(_Entity);
 
             mgr.SetComponentData(_Entity, new Dots.Attributes { Id = Id, Data = new Attributes { Appertance = appearance } });
@@ -59,7 +60,8 @@ namespace Astringent.Game20220410.Sources
             eventsSystem.MoveingState.StateEvent += _Update;
             eventsSystem.Attributes.StateEvent += _Update;
             eventsSystem.TriggerEventBufferElement.StateEvent += _UpdateVision;
-            
+            eventsSystem.TriggerEventBufferElement.StateEvent += _UpdateMoveStop;
+
 
             _VisionEntity = _CreateVision(mgr,_Entity);
 
@@ -67,7 +69,6 @@ namespace Astringent.Game20220410.Sources
         }
 
        
-
         private Unity.Entities.Entity _CreateVision(Unity.Entities.EntityManager mgr, Unity.Entities.Entity owner)
         {
             if(!mgr.HasComponent<Unity.Entities.LinkedEntityGroup>(owner))
@@ -90,11 +91,6 @@ namespace Astringent.Game20220410.Sources
             return vision;
 
             
-        }
-
-        private void _Empty(int obj)
-        {
-            UnityEngine.Debug.Log($"empty event{obj}");
         }
 
         internal Value<bool> SetDirection(float3 dir)
@@ -125,7 +121,32 @@ namespace Astringent.Game20220410.Sources
             UnityEngine.Debug.Log("update =atrt");
             _Attributes.Value = arg2;
         }
-        
+        private void _UpdateMoveStop(Unity.Entities.Entity owner, Dots.TriggerEventBufferElement element)
+        {
+            if (element.State != Dots.PhysicsEventState.Enter)
+                return;
+
+            UnityEngine.Debug.Log("_UpdateMoveStop 1");
+
+            if (!owner.Equals(_Entity))
+                return;
+
+            UnityEngine.Debug.Log("_UpdateMoveStop 2");
+
+            var mgr = Dots.Systems.Service.GetWorld().EntityManager;
+            if (!mgr.HasComponent<Dots.Attributes>(element.Entity))
+                return;
+
+            UnityEngine.Debug.Log("_UpdateMoveStop 3");
+            var attr = mgr.GetComponentData<Dots.Attributes>(element.Entity);
+
+            if(attr.Data.Appertance != APPEARANCE.Barrier)
+                return;
+
+            UnityEngine.Debug.Log("_UpdateMoveStop 4");
+            mgr.SetComponentData(_Entity , new Dots.Direction() { Value = float3.zero});
+        }
+
         private void _UpdateVision(Unity.Entities.Entity owner, Dots.TriggerEventBufferElement element)
         {
             if (element.State == Dots.PhysicsEventState.Stay)
@@ -141,12 +162,14 @@ namespace Astringent.Game20220410.Sources
             
             if(element.State == Dots.PhysicsEventState.Enter)
             {
+                UnityEngine.Debug.Log("Dots.PhysicsEventState.Enter");
                 lock(_VisionEntites)
                     _VisionEntites.Add(attr.Id);
             }
             else if (element.State == Dots.PhysicsEventState.Exit)
             {
-                lock(_VisionEntites)
+                UnityEngine.Debug.Log("Dots.PhysicsEventState.Exit");
+                lock (_VisionEntites)
                     _VisionEntites.RemoveAll(i => i == attr.Id);
             }
 
@@ -166,7 +189,8 @@ namespace Astringent.Game20220410.Sources
         {
             var eventsSystem = Dots.Systems.Service.GetWorld().GetExistingSystem<Dots.Systems.EventsSystem>();
 
-            
+
+            eventsSystem.TriggerEventBufferElement.StateEvent -= _UpdateMoveStop;
             eventsSystem.TriggerEventBufferElement.StateEvent -= _UpdateVision;
             eventsSystem.MoveingState.StateEvent -= _Update;
             eventsSystem.Attributes.StateEvent -= _Update;

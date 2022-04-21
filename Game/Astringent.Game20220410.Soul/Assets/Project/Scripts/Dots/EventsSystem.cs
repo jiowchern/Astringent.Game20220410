@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Linq;
 using Unity.Entities;
 using Unity.Jobs;
 
@@ -6,7 +6,7 @@ using Unity.Jobs;
 namespace Astringent.Game20220410.Dots.Systems
 {
 
-
+    [UpdateAfter(typeof(TriggerEventsSystem))]
     public partial class EventsSystem : Unity.Entities.SystemBase
     {
         
@@ -56,12 +56,12 @@ namespace Astringent.Game20220410.Dots.Systems
 
             TriggerEventBufferElement.Update(writter =>
             {
-                Entities.WithChangeFilter<TriggerEventBufferElement>().ForEach((in Entity owner, in DynamicBuffer<TriggerEventBufferElement> elements) =>
+                Entities.ForEach((in Entity owner, in DynamicBuffer<TriggerEventBufferElement> elements) =>
                 {
+
                     foreach (var element in elements)
-                    {
-                        if(!element._isStale)
-                            writter.Enqueue(new EventsSystemHandler<TriggerEventBufferElement>.Data() { State = element, Owner = owner }); ;
+                    {                                            
+                        writter.Enqueue(new EventsSystemHandler<TriggerEventBufferElement>.Data() { State = element, Owner = owner }); ;
                     }
                     
                 }).Schedule(Dependency).Complete();
