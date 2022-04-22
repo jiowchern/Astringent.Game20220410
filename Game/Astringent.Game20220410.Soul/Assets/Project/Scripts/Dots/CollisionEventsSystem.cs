@@ -57,6 +57,7 @@ namespace Astringent.Game20220410.Dots.Systems
 
             public void Execute(CollisionEvent collisionEvent)
             {
+                
                 UnityEngine.Debug.Log("public void Execute(CollisionEvent collisionEvent)");
                 CollisionEvent.Details collisionEventDetails = default;
 

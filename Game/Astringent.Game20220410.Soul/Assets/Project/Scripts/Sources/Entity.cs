@@ -54,7 +54,8 @@ namespace Astringent.Game20220410.Sources
             mgr.AddComponent<Dots.MoveingState>(_Entity);
             mgr.AddComponent<Dots.Direction>(_Entity);
             mgr.AddComponent<Dots.Attributes>(_Entity);
-            mgr.AddComponent<Dots.Past>(_Entity);
+            mgr.AddComponent<Dots.EventPast>(_Entity);
+            mgr.AddComponent<Dots.RunningPast>(_Entity);
             mgr.AddBuffer<Dots.TriggerEventBufferElement>(_Entity);
             mgr.AddBuffer<Dots.CollisionEventBufferElement>(_Entity);
             mgr.AddComponentData(_Entity, new Dots.CollisionEventsReceiverProperties { UsesCollisionDetails = true });

@@ -43,7 +43,7 @@ namespace Astringent.Game20220410.Dots.Systems
         {
             
             MoveingState.Update((writter) => {
-                Entities.ForEach((ref Past past,in Entity owner,in Dots.MoveingState move_state) =>
+                Entities.ForEach((ref EventPast past,in Entity owner,in Dots.MoveingState move_state) =>
                 {
                     if (Sources.Unsafe.Equal(move_state.Data, past.MoveingState))
                         return;
@@ -55,7 +55,7 @@ namespace Astringent.Game20220410.Dots.Systems
             });            
 
             Attributes.Update(writter => {
-                Entities.ForEach((ref Past past, in Entity owner, in Dots.Attributes attributes) =>
+                Entities.ForEach((ref EventPast past, in Entity owner, in Dots.Attributes attributes) =>
                 {
                     if (Sources.Unsafe.Equal(attributes.Data, past.Attributes))
                         return;
