@@ -6,6 +6,7 @@ namespace Astringent.Game20220410.Dots
     public struct RunningPast : IComponentData
     {
         public float3 VelocityLinear;
+        public float3 Direction;
     }
 
     
