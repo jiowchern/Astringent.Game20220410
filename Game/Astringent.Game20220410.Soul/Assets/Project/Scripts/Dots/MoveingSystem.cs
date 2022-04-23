@@ -141,7 +141,9 @@ namespace Astringent.Game20220410.Dots.Systems
                 move_state.Data.Position = translation.Value;
                 move_state.Data.Vector = dir.Value * move_state.Speed;
                 velocity.Linear = move_state.Data.Vector;
-                
+                past.VelocityLinear = move_state.Data.Vector; 
+
+
 
             }).ScheduleParallel(Dependency);
             Dependency = Entities.ForEach((ref Direction dir, in Entity owner, in Attributes attributes, in DynamicBuffer<CollisionEventBufferElement> buffers) => {
@@ -153,11 +155,19 @@ namespace Astringent.Game20220410.Dots.Systems
                     }
                     //velocity.Linear = 0;
                     dir.Value = float3.zero;
+                    UnityEngine.Debug.Log("stop dir");
                     return;
                 }
 
             }).ScheduleParallel(Dependency);
-          
+
+            Dependency = Entities.ForEach((ref Direction dir, in Unity.Physics.PhysicsVelocity velocity) => {
+                if (Unity.Mathematics.math.all(dir.Value == velocity.Linear))
+                    return;
+                dir.Value = velocity.Linear;
+                UnityEngine.Debug.Log("change velocity");
+            }).ScheduleParallel(Dependency);
+
 
 
         }

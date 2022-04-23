@@ -73,6 +73,7 @@ namespace Astringent.Game20220410
 
         new private void OnDestroy()
         {
+            _CommandDisposable.Clear();
             _Release();
             base.OnDestroy();
         }
@@ -96,8 +97,10 @@ namespace Astringent.Game20220410
         private bool _PreMove(IEntity entity, Vector3 dir)
         {
             var state = entity.MoveingState.Value;
-            state.Vector = dir.normalized * 1 ;
-            //_Move(state);
+            state.StartTime = Player.WorldTime;
+            state.Vector = new Unity.Mathematics.float3(dir.normalized.x,0, dir.normalized.z);
+            state.Position = new Unity.Mathematics.float3(gameObject.transform.position);
+            _Move(state);
             return true;
         }
     }

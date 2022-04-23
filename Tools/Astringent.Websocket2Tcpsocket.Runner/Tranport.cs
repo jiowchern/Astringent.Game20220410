@@ -69,6 +69,7 @@ namespace Astringent.Websocket2Tcpsocket.Runner
                         }
                         stopwatch.Stop();
                         System.Console.WriteLine($"w->t {sendCount}byte ");
+                        ///System.Threading.Thread.Sleep(500);
                     }
                     await tcpConnecter.Disconnect();
                     System.Console.WriteLine($"done w->t");
@@ -102,7 +103,7 @@ namespace Astringent.Websocket2Tcpsocket.Runner
                         stopwatch.Stop();
 
                         System.Console.WriteLine($"t->w {sendCount}byte ");
-                        
+                        //System.Threading.Thread.Sleep(1000);
                     }
 
                     System.Console.WriteLine($"done t->w");
